@@ -1,0 +1,33 @@
+Example text for testing regular expressions in PyQuickRef.
+
+Email addresses:
+- support@example.com
+- info@python.org
+- user.name@domain.co.uk
+
+Phone numbers:
+- (123) 456-7890
+- 555-123-4567
+- 123.456.7890
+
+Dates:
+- 2023-11-28
+- 01/15/2023
+- Dec 25, 2023
+
+URLs:
+- https://www.example.com
+- http://python.org/docs
+- ftp://files.example.net
+
+IP Addresses:
+- 192.168.1.1
+- 10.0.0.255
+- 255.255.255.0
+
+Sample code snippets:
+def hello_world():
+    print("Hello, World!")
+
+import re
+pattern = r'\d{4}-\d{2}-\d{2}'

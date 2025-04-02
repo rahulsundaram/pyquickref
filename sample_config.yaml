@@ -1,0 +1,47 @@
+# PyQuickRef Sample Configuration
+# Use this file with: python main.py --config sample_config.yaml
+
+# List of functions to run (in order)
+functions:
+  - list_iterate
+  - dict_iterate
+  - set_modify
+
+  # String and data structure examples
+  - string_operations
+  - list_comprehend
+
+  # Advanced features
+  - regex_patterns
+  - json_operations
+  - decorator_example
+
+  # Demonstration grouping example - uncomment to use
+  # - context_managers
+  # - thread_execute
+  # - error_handle
+
+# Named groups of functions for different purposes
+# These are not used directly but serve as documentation
+function_groups:
+  basic:
+    - list_iterate
+    - dict_iterate
+    - tuple_unpack
+
+  strings:
+    - string_operations
+
+  advanced:
+    - lambda_functions
+    - context_managers
+    - decorator_example
+
+  error_handling:
+    - error_handle
+
+  all_data_types:
+    - list_modify
+    - dict_iterate
+    - set_modify
+    - tuple_unpack

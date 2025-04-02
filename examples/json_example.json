@@ -1,0 +1,35 @@
+{
+  "name": "PyQuickRef Demo",
+  "description": "Example JSON data for demonstration purposes",
+  "version": "1.0.0",
+  "examples": [
+    {
+      "type": "dictionary",
+      "data": {
+        "name": "John Doe",
+        "age": 30,
+        "email": "john@example.com"
+      }
+    },
+    {
+      "type": "array",
+      "data": [1, 2, 3, 4, 5]
+    },
+    {
+      "type": "nested",
+      "data": {
+        "user": {
+          "profile": {
+            "name": "Jane Smith",
+            "location": {
+              "city": "New York",
+              "state": "NY"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "tags": ["python", "json", "demo", "examples"],
+  "created_at": "2023-11-28T12:00:00Z"
+}
