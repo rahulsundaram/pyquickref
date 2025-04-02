@@ -1,0 +1,14 @@
+{
+  "name": "John Doe",
+  "age": 30,
+  "is_student": false,
+  "courses": [
+    "Python",
+    "Data Science",
+    "Machine Learning"
+  ],
+  "address": {
+    "street": "123 Main St",
+    "city": "Pythonville"
+  }
+}
