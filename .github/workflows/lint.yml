@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -23,18 +23,18 @@ jobs:
     - name: Install uv globally
       run: |
         python -m pip install --upgrade pip
-        pip install uv  # Ensure uv is installed globally
+        pip install uv
 
     - name: Set up virtual environment with uv
       run: |
-        uv venv  # Create the virtual environment using uv
+        uv venv
         source .venv/bin/activate
 
     - name: Install dependencies
       run: |
         source .venv/bin/activate
         uv pip install --upgrade pip
-        uv pip install ruff mypy types-PyYAML  # Install dependencies using uv
+        uv pip install ruff mypy types-PyYAML
 
     - name: Lint with Ruff
       run: |
