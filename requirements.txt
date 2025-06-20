@@ -10,3 +10,4 @@ bandit>=1.7.5
 safety>=2.3.5
 sphinx>=7.0.0
 sphinx-rtd-theme>=1.2.0
+urllib3>=2.5.0 # not directly required, pinned by Snyk to avoid a vulnerability
