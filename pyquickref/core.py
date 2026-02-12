@@ -1,153 +1,100 @@
-"""Core functionality for PyQuickRef.
+"""Core runner for PyQuickRef.
 
-This module defines the PyQuickRef class which serves as the main entry point
-for running Python examples and demonstrations.
+Iterates the example registry and executes functions with the right arguments.
 """
 
-import logging
 import os
 
-# Import all the example methods first
-from pyquickref.examples.advanced import (
-    itertools_examples,
-    json_operations,
-    regex_patterns,
-    thread_execute,
+from pyquickref.registry import (
+    ExampleInfo,
+    Lesson,
+    examples_for_lesson,
+    examples_in_lesson_order,
+    get_lessons,
+    get_registry,
 )
-from pyquickref.examples.collections_ops import collections_example
-from pyquickref.examples.data_structures import (
-    conditional_check,
-    dict_iterate,
-    list_comprehend,
-    list_iterate,
-    list_modify,
-    set_modify,
-    tuple_unpack,
-)
-from pyquickref.examples.error_handling import error_handle
-from pyquickref.examples.file_operations import (
-    context_managers,
-    file_write,
-)
-from pyquickref.examples.functional import (
-    decorator_example,
-    lambda_functions,
-)
-from pyquickref.examples.loops import loop_range
-from pyquickref.examples.modern import (
-    dataclass_example,
-    enum_example,
-    generator_example,
-    pattern_matching,
-)
-from pyquickref.examples.strings import string_operations
+from pyquickref.testdata import SampleData
 
 
-class PyQuickRef:
-    """A utility class that demonstrates various Python concepts and operations.
-
-    Includes data structures, file handling, JSON handling, threading, and more.
-    """
-
-    def run_examples(
-        self: "PyQuickRef", functions_to_run: list[str] | None = None
-    ) -> None:
-        """Run specified examples or all examples if none are specified.
-
-        Args:
-        ----
-            functions_to_run: Optional list of function names to run.
-                If None or empty list, run all examples.
-
-        """
-        available_methods = {
-            method_name: method
-            for method_name, method in vars(PyQuickRef).items()
-            if callable(method) and not method_name.startswith("_")
-        }
-        if functions_to_run:
-            for func in functions_to_run:
-                if func in available_methods:
-                    self.logger.info(f"Running example: {func}")
-                    available_methods[func](self)
-                else:
-                    self.logger.warning(f"Function '{func}' not found in PyQuickRef.")
-        else:
-            self.logger.info("Running all examples.")
-            for method_name, method in available_methods.items():
-                if not method_name.startswith("_") and method_name != "run_examples":
-                    self.logger.info(f"Running example: {method_name}")
-                    method(self)
-
-    def __init__(
-        self: "PyQuickRef", logger: logging.Logger, output_dir: str | None = None
-    ) -> None:
-        """Initialize the PyQuickRef instance.
-
-        Args:
-        ----
-            logger (logging.Logger): Logger instance for logging messages.
-            output_dir (Optional[str]): Directory for output files. Defaults to None.
-
-        """
-        self.logger = logger
-        self.output_dir = output_dir or "data"  # Updated default directory
-
-        # Initialize test data
-        self.testlist: list[str] = ["apple", "banana", "cherry"]
-        self.testdict: dict[str, int] = {"a": 1, "b": 2, "c": 3}
-        self.testset: set[int] = {1, 2, 3}
-        self.testtuple: tuple[int, int, int] = (10, 20, 30)
-        self.teststring: str = "Python is awesome!"
-
-        if self.output_dir and not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
-            self.logger.info(f"Created output directory: {self.output_dir}")
-
-    def _get_output_path(self: "PyQuickRef", filename: str) -> str:
-        """Generate the full output path for a given filename.
-
-        Args:
-        ----
-            filename (str): The name of the file.
-
-        Returns:
-        -------
-            str: The full path to the output file.
-
-        """
-        if self.output_dir:
-            return os.path.join(self.output_dir, filename)
-        else:
-            self.logger.warning("Output directory is not set. Returning filename only.")
-            return filename
+def _run_one(info: ExampleInfo, output_dir: str) -> None:
+    """Execute a single example, injecting SampleData / output_dir as needed."""
+    kwargs: dict[str, object] = {}
+    if info.needs_test_data:
+        kwargs["data"] = SampleData()
+    if info.needs_output_dir:
+        kwargs["output_dir"] = output_dir
+    info.func(**kwargs)
 
 
-_EXAMPLE_METHODS = [
-    list_iterate,
-    list_modify,
-    list_comprehend,
-    dict_iterate,
-    set_modify,
-    tuple_unpack,
-    conditional_check,
-    string_operations,
-    lambda_functions,
-    decorator_example,
-    file_write,
-    context_managers,
-    error_handle,
-    json_operations,
-    regex_patterns,
-    itertools_examples,
-    thread_execute,
-    loop_range,
-    collections_example,
-    dataclass_example,
-    pattern_matching,
-    generator_example,
-    enum_example,
-]
+def _print_lesson_header(lesson: Lesson) -> None:
+    print(f"\n{'#' * 60}")
+    print(f"  Lesson {lesson.number}: {lesson.title}")
+    print(f"  {lesson.goal}")
+    if lesson.doc_url:
+        print(f"  {lesson.doc_url}")
+    print(f"{'#' * 60}")
 
-for _method in _EXAMPLE_METHODS:
-    setattr(PyQuickRef, _method.__name__, _method)
+
+def _print_example_header(info: ExampleInfo) -> None:
+    print(f"\n--- {info.name} ---")
+    print(f"    {info.description}")
+    if info.doc_url:
+        print(f"    {info.doc_url}")
+
+
+def run_lesson(lesson: Lesson, output_dir: str) -> None:
+    """Run all examples in a single lesson."""
+    os.makedirs(output_dir, exist_ok=True)
+    _print_lesson_header(lesson)
+    for info in examples_for_lesson(lesson):
+        _print_example_header(info)
+        _run_one(info, output_dir)
+    print()
+
+
+def run_examples(
+    functions_to_run: list[str] | None = None, output_dir: str = "data"
+) -> None:
+    """Run selected examples (or all in lesson order)."""
+    os.makedirs(output_dir, exist_ok=True)
+    registry = get_registry()
+
+    if functions_to_run:
+        for name in functions_to_run:
+            info = registry.get(name)
+            if info is None:
+                print(f"Warning: '{name}' not found in registry — skipping.")
+                continue
+            _print_example_header(info)
+            _run_one(info, output_dir)
+    else:
+        current_lesson: int | None = None
+        lessons = {cat: lesson for lesson in get_lessons() for cat in lesson.categories}
+        for info in examples_in_lesson_order():
+            lesson = lessons.get(info.category)
+            lesson_num = lesson.number if lesson else None
+            if lesson_num != current_lesson:
+                current_lesson = lesson_num
+                if lesson:
+                    _print_lesson_header(lesson)
+            _print_example_header(info)
+            _run_one(info, output_dir)
+
+    print()
+
+
+def list_examples() -> None:
+    """Print all lessons and their examples."""
+    lessons = get_lessons()
+    total = sum(len(examples_for_lesson(ls)) for ls in lessons)
+    print(f"\n{total} examples across {len(lessons)} lessons:\n")
+
+    for lesson in lessons:
+        print(f"  Lesson {lesson.number}: {lesson.title}")
+        print(f"  {lesson.goal}")
+        if lesson.doc_url:
+            print(f"  {lesson.doc_url}")
+        print()
+        for info in examples_for_lesson(lesson):
+            print(f"    {info.name:30s} {info.description}")
+        print()

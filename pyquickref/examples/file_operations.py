@@ -1,42 +1,61 @@
 """File operation examples for PyQuickRef.
 
-This module contains examples demonstrating Python's file operations,
-including reading, writing, and context managers.
+Reading, writing, and context managers.
+Docs: https://docs.python.org/3/tutorial/inputoutput.html#reading-and-writing-files
 """
 
 import contextlib
 import io
+import os
 from collections.abc import Iterator
-from typing import Any
+
+from pyquickref.registry import example, show
 
 
-def file_write(self: Any) -> None:
+@example(
+    "File Operations",
+    "Write text to a file using open()",
+    doc_url="https://docs.python.org/3/tutorial/inputoutput.html#reading-and-writing-files",
+    needs_output_dir=True,
+)
+def file_write(output_dir: str) -> None:
     """Write a sample message to a file in the output directory."""
-    self.logger.info("Demonstrating file writing")
+    output_path = os.path.join(output_dir, "example.txt")
+    show("with open('example.txt', 'w') as f:\n    f.write('Hello, file handling!')")
     try:
-        output_path = self._get_output_path("example.txt")
-        self.logger.debug(f"Opening {output_path} for writing")
         with open(output_path, "w") as file:
             file.write("Hello, file handling!")
-        self.logger.info("File written successfully.")
         print(f"File written successfully to {output_path}")
     except OSError as e:
-        self.logger.error(f"Error writing to file: {e}")
+        print(f"Error writing to file: {e}")
 
 
-def context_managers(self: Any) -> None:
+@example(
+    "File Operations",
+    "Context managers (with statement) and custom context managers",
+    doc_url="https://docs.python.org/3/library/contextlib.html",
+    needs_output_dir=True,
+)
+def context_managers(output_dir: str) -> None:
     """Demonstrate the use of context managers in Python."""
-    self.logger.info("Demonstrating context managers")
+    output_path = os.path.join(output_dir, "example_context.txt")
+    show("with open('example_context.txt', 'w') as f:\n    f.write('...')")
     try:
-        output_path = self._get_output_path("example_context.txt")
         with open(output_path, "w") as file:
             file.write("Context managers automatically handle resource cleanup")
-        self.logger.info("File written with context manager")
         print(f"File written with context manager to {output_path}")
     except OSError as e:
-        self.logger.error(f"Error writing to file: {e}")
+        print(f"Error writing to file: {e}")
 
     # Custom context manager using contextlib
+    show(
+        "@contextlib.contextmanager\n"
+        "def string_io():\n"
+        "    output = io.StringIO()\n"
+        "    try:\n        yield output\n"
+        "    finally:\n        print(output.getvalue())"
+    )
+
     @contextlib.contextmanager
     def string_io() -> Iterator[io.StringIO]:
         output = io.StringIO()
@@ -45,9 +64,7 @@ def context_managers(self: Any) -> None:
         finally:
             value = output.getvalue()
             output.close()
-            self.logger.debug(f"Captured in StringIO: {value}")
             print(f"Captured: {value}")
 
-    self.logger.debug("Using custom string_io context manager")
     with string_io() as s:
         s.write("Hello, context manager!")

@@ -1,12 +1,13 @@
-"""Tests for loop operations in PyQuickRef."""
+"""Tests for loop operations."""
 
 from collections.abc import Callable
-from typing import Any
+
+from pyquickref.examples.loops import loop_range
 
 
-def test_loop_range(quickref: Any, capture_output: Callable) -> None:
+def test_loop_range(capture_output: Callable) -> None:
     """Test loop constructs: range, enumerate, zip, while, continue."""
-    output = capture_output(quickref.loop_range)
+    output = capture_output(loop_range)
     assert "Range(5):" in output
     assert "Enumerate:" in output
     assert "0: apple" in output

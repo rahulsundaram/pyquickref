@@ -1,7 +1,4 @@
-"""PyQuickRef: A Python utility demonstrating various concepts and operations.
-
-This module serves as the entry point for running PyQuickRef.
-"""
+"""PyQuickRef: Entry point for running Python quick reference examples."""
 
 from pyquickref.cli import main
 

@@ -1,10 +1,10 @@
 """Error handling examples for PyQuickRef.
 
-This module contains examples demonstrating Python's error handling capabilities,
-including try/except blocks, raising exceptions, and custom exceptions.
+Try/except blocks, raising exceptions, and custom exceptions.
+Docs: https://docs.python.org/3/tutorial/errors.html
 """
 
-from typing import Any
+from pyquickref.registry import example, show
 
 
 class InsufficientFundsError(Exception):
@@ -17,11 +17,19 @@ class InsufficientFundsError(Exception):
         super().__init__(f"Cannot withdraw ${amount:.2f}, balance is ${balance:.2f}")
 
 
-def error_handle(self: Any) -> None:
+@example(
+    "Error Handling",
+    "try/except/finally, multiple except, custom exceptions",
+    doc_url="https://docs.python.org/3/tutorial/errors.html",
+)
+def error_handle() -> None:
     """Demonstrate error handling with try-except-finally and custom exceptions."""
-    self.logger.info("Demonstrating error handling")
-
     # Basic try/except/finally
+    show(
+        "try:\n    result = 10 / 0\n"
+        "except ZeroDivisionError:\n    print('Caught!')\n"
+        "finally:\n    print('Always runs')"
+    )
     try:
         result = 10 / 0
         print(f"Result: {result}")
@@ -31,6 +39,7 @@ def error_handle(self: Any) -> None:
         print("Finally block always executes.")
 
     # Multiple except clauses
+    show("try:\n    100 / val\nexcept ZeroDivisionError: ...\nexcept TypeError: ...")
     values = [1, "two", None]
     for val in values:
         try:
@@ -41,6 +50,11 @@ def error_handle(self: Any) -> None:
             print(f"  100 / {val!r} = TypeError (unsupported type)")
 
     # Custom exception
+    show(
+        "class InsufficientFundsError(Exception): ...\n"
+        "if amount > balance:\n"
+        "    raise InsufficientFundsError(balance, amount)"
+    )
     balance = 50.0
     try:
         amount = 100.0

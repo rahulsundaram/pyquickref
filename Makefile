@@ -1,4 +1,4 @@
-.PHONY: help lint format format-check typecheck test check all clean
+.PHONY: help lint format format-check typecheck test check all clean run list
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -22,6 +22,12 @@ check: lint format-check typecheck test ## Run all checks (lint + format + typec
 	@echo "All checks passed!"
 
 all: format check ## Format code then run all checks
+
+run: ## Run all examples
+	uv run pyquickref
+
+list: ## List all examples with doc links
+	uv run pyquickref --list
 
 clean: ## Remove build artifacts
 	rm -rf build/ dist/ *.egg-info .pytest_cache .ruff_cache __pycache__
