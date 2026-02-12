@@ -147,6 +147,7 @@ def thread_execute() -> None:
     """Demonstrate the use of multithreading in Python."""
 
     def task(n: int) -> str:
+        """Return a completion message for task n."""
         return f"Task {n} completed"
 
     show(

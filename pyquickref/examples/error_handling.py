@@ -50,11 +50,7 @@ def error_handle() -> None:
             print(f"  100 / {val!r} = TypeError (unsupported type)")
 
     # Custom exception
-    show(
-        "class InsufficientFundsError(Exception): ...\n"
-        "if amount > balance:\n"
-        "    raise InsufficientFundsError(balance, amount)"
-    )
+    show(InsufficientFundsError)
     balance = 50.0
     try:
         amount = 100.0

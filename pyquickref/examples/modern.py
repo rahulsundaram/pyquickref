@@ -47,7 +47,7 @@ class Config:
 )
 def dataclass_example() -> None:
     """Demonstrate dataclasses with auto-generated methods."""
-    show("@dataclass\nclass Point:\n    x: float\n    y: float")
+    show(Point)
 
     p1 = Point(3.0, 4.0)
     p2 = Point(0.0, 0.0)
@@ -67,8 +67,8 @@ def dataclass_example() -> None:
 def pattern_matching() -> None:
     """Demonstrate structural pattern matching (match/case)."""
 
-    # Match on value
     def http_status(code: int) -> str:
+        """Map an HTTP status code to its description."""
         match code:
             case 200:
                 return "OK"
@@ -79,12 +79,12 @@ def pattern_matching() -> None:
             case _:
                 return f"Unknown ({code})"
 
-    show("match code:\n    case 200: return 'OK'\n    case 404: return 'Not Found'")
+    show(http_status)
     for code in [200, 404, 500, 418]:
         print(f"  HTTP {code}: {http_status(code)}")
 
-    # Match on structure
     def describe(obj: object) -> str:
+        """Describe a shape using structural pattern matching."""
         match obj:
             case {"type": "circle", "radius": r}:
                 return f"Circle with radius {r}"
@@ -112,26 +112,20 @@ def pattern_matching() -> None:
 def generator_example() -> None:
     """Demonstrate generators and yield."""
 
-    # Generator function with yield
     def fibonacci(n: int) -> Any:
+        """Yield the first n Fibonacci numbers."""
         a, b = 0, 1
         for _ in range(n):
             yield a
             a, b = b, a + b
 
-    show(
-        "def fibonacci(n):\n    a, b = 0, 1\n"
-        "    for _ in range(n):\n"
-        "        yield a\n        a, b = b, a + b"
-    )
+    show(fibonacci)
     print(f"Fibonacci(8): {list(fibonacci(8))}")
 
-    # Generator expression (like list comprehension but lazy)
     show("squares_gen = (x**2 for x in range(5))")
     squares_gen = (x**2 for x in range(5))
     print(f"Generator expression: {list(squares_gen)}")
 
-    # Walrus operator (:=) in a while loop
     show(
         "while (val := next(it, None)) is not None:\n"
         "    if val > 4: results.append(val)"
@@ -153,12 +147,13 @@ def generator_example() -> None:
 )
 def enum_example() -> None:
     """Demonstrate enums for type-safe constants."""
-    show("class Color(Enum):\n    RED = auto()\n    GREEN = auto()\n    BLUE = auto()")
+    show(Color)
     print(f"Color.RED: {Color.RED}")
     print(f"Color.RED.value: {Color.RED.value}")
     print(f"All colors: {[c.name for c in Color]}")
 
     def describe_color(color: Color) -> str:
+        """Return a temperature description for a color."""
         match color:
             case Color.RED:
                 return "warm"
@@ -178,7 +173,6 @@ def enum_example() -> None:
 )
 def walrus_operator() -> None:
     """Demonstrate the walrus operator (:=) for inline assignment."""
-    # In a while loop — read until sentinel
     show(
         "data = [1, 5, 3, 8, 2, 7]\n"
         "it = iter(data)\n"
@@ -193,12 +187,10 @@ def walrus_operator() -> None:
             big.append(val)
     print(f"Values > 4: {big}")
 
-    # In a list comprehension — compute once, filter and use
     show("[y for x in range(10) if (y := x**2) > 20]")
     result = [y for x in range(10) if (y := x**2) > 20]
     print(f"Squares > 20: {result}")
 
-    # In an if statement — avoid double computation
     show("text = 'Hello World'\nif (n := len(text)) > 5:\n    print(f'{n} chars')")
     text = "Hello World"
     if (n := len(text)) > 5:
@@ -212,50 +204,30 @@ def walrus_operator() -> None:
 )
 def type_hints() -> None:
     """Demonstrate type annotations and common typing patterns."""
-    # Basic annotations
-    show(
-        "def add(a: int, b: int) -> int:\n"
-        "    return a + b\n\n"
-        "name: str = 'Python'\n"
-        "scores: list[int] = [95, 87, 92]"
-    )
+    show("name: str = 'Python'\nscores: list[int] = [95, 87, 92]")
     name: str = "Python"
     scores: list[int] = [95, 87, 92]
     print(f"name: {name} (annotated as str)")
     print(f"scores: {scores} (annotated as list[int])")
 
-    # Optional and Union (modern syntax with |)
-    show(
-        "def find_user(user_id: int) -> str | None:\n"
-        "    users = {1: 'Alice', 2: 'Bob'}\n"
-        "    return users.get(user_id)"
-    )
-
     def find_user(user_id: int) -> str | None:
+        """Look up a user by ID, returning None if not found."""
         users = {1: "Alice", 2: "Bob"}
         return users.get(user_id)
 
+    show(find_user)
     print(f"find_user(1) = {find_user(1)!r}")
     print(f"find_user(9) = {find_user(9)!r}")
 
-    # Generic containers
-    show(
-        "def first(items: list[str]) -> str | None:\n"
-        "    return items[0] if items else None\n\n"
-        "coords: dict[str, float] = {'lat': 40.7, 'lon': -74.0}"
-    )
+    show("coords: dict[str, float] = {'lat': 40.7, 'lon': -74.0}")
     coords: dict[str, float] = {"lat": 40.7, "lon": -74.0}
     print(f"coords: {coords} (dict[str, float])")
 
-    # Callable type hint
-    show(
-        "from collections.abc import Callable\n\n"
-        "def apply(func: Callable[[int], int], val: int) -> int:\n"
-        "    return func(val)"
-    )
     from collections.abc import Callable as CallableType
 
     def apply(func: CallableType[[int], int], val: int) -> int:
+        """Apply a function to a value and return the result."""
         return func(val)
 
+    show(apply)
     print(f"apply(lambda x: x*2, 5) = {apply(lambda x: x * 2, 5)}")  # noqa: E731

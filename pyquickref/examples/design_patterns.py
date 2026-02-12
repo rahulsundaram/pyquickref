@@ -23,18 +23,26 @@ def factory_pattern() -> None:
     """Demonstrate the factory pattern using ABC and a factory function."""
 
     class Notification(ABC):
+        """Base class for notification channels."""
+
         @abstractmethod
         def send(self: "Notification", message: str) -> str: ...
 
     class EmailNotification(Notification):
+        """Send notifications via email."""
+
         def send(self: "EmailNotification", message: str) -> str:
             return f"Email: {message}"
 
     class SMSNotification(Notification):
+        """Send notifications via SMS."""
+
         def send(self: "SMSNotification", message: str) -> str:
             return f"SMS: {message}"
 
     class PushNotification(Notification):
+        """Send notifications via push."""
+
         def send(self: "PushNotification", message: str) -> str:
             return f"Push: {message}"
 
@@ -45,13 +53,14 @@ def factory_pattern() -> None:
     }
 
     def create_notification(kind: str) -> Notification:
+        """Create a notification instance by type name."""
         cls = types.get(kind)
         if cls is None:
             msg = f"Unknown notification type: {kind}"
             raise ValueError(msg)
         return cls()
 
-    show("def create_notification(kind: str):\n    return types[kind]()")
+    show(create_notification)
     for kind in ["email", "sms", "push"]:
         notif = create_notification(kind)
         print(f"  {notif.send('Hello!')}")
@@ -66,28 +75,28 @@ def strategy_pattern() -> None:
     """Demonstrate the strategy pattern with callable strategies."""
 
     def full_price(amount: float) -> float:
+        """Apply no discount."""
         return amount
 
     def ten_percent_off(amount: float) -> float:
+        """Apply a 10% discount."""
         return amount * 0.9
 
     def member_discount(amount: float) -> float:
+        """Apply a 20% member discount."""
         return amount * 0.8
 
     @dataclass
     class Order:
+        """An order with configurable pricing strategy."""
+
         total: float
         pricing: Callable[[float], float] = full_price
 
         def final_price(self: "Order") -> float:
             return self.pricing(self.total)
 
-    show(
-        "@dataclass\nclass Order:\n    total: float\n"
-        "    pricing: Callable[[float], float] = full_price\n\n"
-        "    def final_price(self):\n"
-        "        return self.pricing(self.total)"
-    )
+    show(Order)
     strategies = [
         ("full_price", full_price),
         ("ten_percent_off", ten_percent_off),
@@ -108,6 +117,8 @@ def observer_pattern() -> None:
 
     @dataclass
     class EventEmitter:
+        """A simple pub/sub event system."""
+
         _listeners: dict[str, list[Callable[..., None]]] = field(default_factory=dict)
 
         def on(self: "EventEmitter", event: str, callback: Callable[..., None]) -> None:
@@ -117,11 +128,7 @@ def observer_pattern() -> None:
             for cb in self._listeners.get(event, []):
                 cb(*args)
 
-    show(
-        "emitter = EventEmitter()\n"
-        "emitter.on('login', lambda user: print(f'Welcome {user}'))\n"
-        "emitter.emit('login', 'Alice')"
-    )
+    show(EventEmitter)
     emitter = EventEmitter()
     emitter.on("login", lambda user: print(f"  Welcome, {user}!"))
     emitter.on("login", lambda user: print(f"  Audit: {user} logged in"))
@@ -141,6 +148,8 @@ def builder_pattern() -> None:
 
     @dataclass
     class HttpRequest:
+        """An HTTP request with method, URL, headers, and body."""
+
         method: str = "GET"
         url: str = ""
         headers: dict[str, str] = field(default_factory=dict)
@@ -148,6 +157,8 @@ def builder_pattern() -> None:
         timeout: float = 30.0
 
     class RequestBuilder:
+        """Fluent builder for constructing HttpRequest objects."""
+
         def __init__(self: "RequestBuilder") -> None:
             self._request = HttpRequest()
 
@@ -172,20 +183,13 @@ def builder_pattern() -> None:
             return self
 
         def build(self: "RequestBuilder") -> HttpRequest:
+            """Build and return the HttpRequest, raising if URL is missing."""
             if not self._request.url:
                 msg = "URL is required"
                 raise ValueError(msg)
             return self._request
 
-    show(
-        "request = (RequestBuilder()\n"
-        "    .method('POST')\n"
-        "    .url('https://api.example.com/users')\n"
-        "    .header('Content-Type', 'application/json')\n"
-        '    .body(\'{"name": "Alice"}\')\n'
-        "    .timeout(10.0)\n"
-        "    .build())"
-    )
+    show(RequestBuilder)
 
     req = (
         RequestBuilder()
@@ -210,30 +214,24 @@ def builder_pattern() -> None:
 )
 def producer_consumer() -> None:
     """Demonstrate producer/consumer with threading and Queue."""
-    show(
-        "q = queue.Queue(maxsize=5)\n\n"
-        "def producer(q, items):\n"
-        "    for item in items:\n"
-        "        q.put(item)\n"
-        "    q.put(None)  # sentinel\n\n"
-        "def consumer(q):\n"
-        "    while (item := q.get()) is not None:\n"
-        "        process(item)"
-    )
-
     results: list[str] = []
     q: queue.Queue[int | None] = queue.Queue(maxsize=3)
 
     def producer(items: list[int]) -> None:
+        """Put items onto the queue, ending with a sentinel."""
         for item in items:
             q.put(item)
         q.put(None)
 
     def consumer() -> None:
+        """Process items from the queue until sentinel."""
         while (item := q.get()) is not None:
             results.append(f"{item}→{item**2}")
             q.task_done()
         q.task_done()
+
+    show(producer)
+    show(consumer)
 
     items = [1, 2, 3, 4, 5]
     prod = threading.Thread(target=producer, args=(items,))
@@ -258,6 +256,8 @@ def rate_limiter() -> None:
     """Demonstrate token bucket rate limiter."""
 
     class TokenBucket:
+        """Rate limiter using the token bucket algorithm."""
+
         def __init__(self: "TokenBucket", rate: float, capacity: int) -> None:
             self.rate = rate
             self.capacity = capacity
@@ -271,24 +271,14 @@ def rate_limiter() -> None:
             self.last_refill = now
 
         def acquire(self: "TokenBucket") -> bool:
+            """Try to consume a token; return True if allowed."""
             self._refill()
             if self.tokens >= 1:
                 self.tokens -= 1
                 return True
             return False
 
-    show(
-        "class TokenBucket:\n"
-        "    def __init__(self, rate, capacity):\n"
-        "        self.rate = rate       # tokens per second\n"
-        "        self.capacity = capacity\n\n"
-        "    def acquire(self) -> bool:\n"
-        "        self._refill()\n"
-        "        if self.tokens >= 1:\n"
-        "            self.tokens -= 1\n"
-        "            return True\n"
-        "        return False"
-    )
+    show(TokenBucket)
 
     bucket = TokenBucket(rate=5, capacity=3)
     print(f"  Rate: {bucket.rate}/s, capacity: {bucket.capacity}")

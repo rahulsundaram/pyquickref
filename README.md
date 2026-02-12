@@ -166,9 +166,10 @@ This project uses the [Astral](https://astral.sh/) toolchain:
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Run `make check` to verify all checks pass
-4. Commit and push
-5. Open a Pull Request
+3. Add unit tests for any new examples or changed behavior
+4. Run `make check` to verify all checks pass (lint, format, types, tests)
+5. Commit and push
+6. Open a Pull Request
 
 ## License
 
