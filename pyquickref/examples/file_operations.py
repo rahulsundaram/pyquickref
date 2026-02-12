@@ -20,8 +20,8 @@ def file_write(self: Any) -> None:
             file.write("Hello, file handling!")
         self.logger.info("File written successfully.")
         print(f"File written successfully to {output_path}")
-    except Exception as e:
-        self.logger.error(f"Error writing to file: {str(e)}")
+    except OSError as e:
+        self.logger.error(f"Error writing to file: {e}")
 
 
 def context_managers(self: Any) -> None:
@@ -33,8 +33,8 @@ def context_managers(self: Any) -> None:
             file.write("Context managers automatically handle resource cleanup")
         self.logger.info("File written with context manager")
         print(f"File written with context manager to {output_path}")
-    except Exception as e:
-        self.logger.error(f"Error writing to file: {str(e)}")
+    except OSError as e:
+        self.logger.error(f"Error writing to file: {e}")
 
     # Custom context manager using contextlib
     @contextlib.contextmanager

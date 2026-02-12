@@ -1,6 +1,7 @@
 """Tests for data structure operations in PyQuickRef."""
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 
 def test_list_iterate(quickref: Any, capture_output: Callable) -> None:
@@ -27,10 +28,24 @@ def test_dict_iterate(quickref: Any, capture_output: Callable) -> None:
 def test_set_operations(quickref: Any, capture_output: Callable) -> None:
     """Test set operations."""
     output = capture_output(quickref.set_modify)
-    # Remove all spaces for comparison to handle formatting differences
-    assert "Originalset:{1,2,3}" in output.replace(" ", "")
+    assert "Original set:" in output
     assert "After adding 4:" in output
     assert "After removing 2:" in output
+
+
+def test_list_modify(quickref: Any, capture_output: Callable) -> None:
+    """Test list modification operations."""
+    output = capture_output(quickref.list_modify)
+    assert "Original list:" in output
+    assert "After appending 'four':" in output
+    assert "After removing 'banana':" in output
+    assert "After reversing:" in output
+
+
+def test_conditional_check(quickref: Any, capture_output: Callable) -> None:
+    """Test conditional check for item in list."""
+    output = capture_output(quickref.conditional_check)
+    assert "'banana' is in the list!" in output
 
 
 def test_tuple_unpacking(quickref: Any, capture_output: Callable) -> None:

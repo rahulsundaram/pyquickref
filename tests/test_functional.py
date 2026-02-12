@@ -1,6 +1,7 @@
 """Tests for functional programming features in PyQuickRef."""
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 
 def test_lambda_functions(quickref: Any, capture_output: Callable) -> None:

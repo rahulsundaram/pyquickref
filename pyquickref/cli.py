@@ -4,7 +4,6 @@ This module provides the command-line interface for running PyQuickRef.
 """
 
 import argparse
-from typing import Optional
 
 import yaml
 
@@ -59,7 +58,7 @@ def main() -> None:
     pyquickref = PyQuickRef(logger, args.output_dir)
 
     # Determine functions to run
-    functions_to_run: Optional[list[str]] = None
+    functions_to_run: list[str] | None = None
 
     # If config file is provided, try to load functions from it
     if args.config:
@@ -68,7 +67,7 @@ def main() -> None:
                 config = yaml.safe_load(config_file)
                 if "functions" in config:
                     functions_to_run = config["functions"]
-        except Exception as e:
+        except (OSError, yaml.YAMLError) as e:
             logger.error(f"Error loading config file: {e}")
 
     # Command line arguments override config file

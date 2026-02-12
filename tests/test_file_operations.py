@@ -1,7 +1,8 @@
 """Tests for file operations in PyQuickRef."""
 
 import os
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 
 def test_file_write(quickref: Any, capture_output: Callable, temp_dir: str) -> None:

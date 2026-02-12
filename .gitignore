@@ -25,13 +25,6 @@ var/
 example.txt
 example_context.txt
 
-# Examples directory - ignore all files except specific ones needed for demos
-examples/*
-!examples/README.md
-!examples/*.md
-!examples/json_example.json
-!examples/regex_test.txt
-
 # Test and coverage reports
 htmlcov/
 .tox/
