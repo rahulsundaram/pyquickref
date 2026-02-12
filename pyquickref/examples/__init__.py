@@ -15,6 +15,7 @@ from pyquickref.examples import (  # noqa: F401
     functional,
     loops,
     modern,
+    practical_patterns,
     stdlib_tools,
     strings,
 )
