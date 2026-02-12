@@ -5,12 +5,10 @@ This module provides utilities for setting up and configuring logging.
 
 import logging
 import sys
-from logging import FileHandler
-from typing import Optional, cast
 
 
 def setup_logger(
-    level: str = "INFO", quiet: bool = False, log_file: Optional[str] = None
+    level: str = "INFO", quiet: bool = False, log_file: str | None = None
 ) -> logging.Logger:
     """Set up and configure a logger.
 
@@ -45,7 +43,7 @@ def setup_logger(
     if not quiet:
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setFormatter(formatter)
-        logger.addHandler(cast(FileHandler, console_handler))
+        logger.addHandler(console_handler)
 
     # Add file handler if log file specified
     if log_file:

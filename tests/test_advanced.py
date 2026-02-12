@@ -1,14 +1,16 @@
 """Tests for advanced features in PyQuickRef."""
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 
 def test_regex_patterns(quickref: Any, capture_output: Callable) -> None:
     """Test regular expressions."""
     output = capture_output(quickref.regex_patterns)
-    # The exact content may depend on the regex_test.txt file
-    assert "info@example.com" in output or "support@python.org" in output
-    assert "Date found:" in output or "Emails found:" in output
+    assert "Emails found:" in output
+    assert "info@example.com" in output
+    assert "support@python.org" in output
+    assert "Date found: 2023-11-25" in output
 
 
 def test_json_operations(quickref: Any, capture_output: Callable) -> None:
@@ -26,7 +28,10 @@ def test_thread_execute(quickref: Any, capture_output: Callable) -> None:
 
 
 def test_error_handling(quickref: Any, capture_output: Callable) -> None:
-    """Test error handling."""
+    """Test error handling with custom exceptions and multiple except."""
     output = capture_output(quickref.error_handle)
-    assert "Caught a division by zero error!" in output
-    assert "This block always executes" in output
+    assert "Caught ZeroDivisionError!" in output
+    assert "Finally block always executes." in output
+    assert "TypeError (unsupported type)" in output
+    assert "Custom exception:" in output
+    assert "Cannot withdraw $100.00" in output

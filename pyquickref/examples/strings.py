@@ -38,13 +38,7 @@ def string_operations(self: Any) -> None:
     self.logger.info("Demonstrating string formatting")
     name = "World"
     # f-strings (Python 3.6+)
-    self.logger.debug(f"f-string example: Hello, {name}!")
-    print(f"Hello, {name}!")
-    # format method
-    formatted = f"Hello, {name}!"
-    self.logger.debug(f"format() example: {formatted}")
-    print(formatted)
-    # format with multiple parameters
-    multi_formatted = "The {animal} is {color}".format(animal="fox", color="brown")
-    self.logger.debug(f"Multi-parameter format example: {multi_formatted}")
-    print(multi_formatted)
+    print(f"f-string: Hello, {name}!")
+    # Older formatting style (still useful for templates)
+    print("str.format: Hello, {}!".format(name))
+    print("The {animal} is {color}".format(animal="fox", color="brown"))

@@ -45,13 +45,13 @@ def json_operations(self: Any) -> None:
             with open(output_path, "w") as f:
                 json.dump(person, f, indent=2)
             print(f"Saved JSON to {output_path}")
-        except Exception as e:
-            self.logger.error(f"Error saving JSON to file: {str(e)}")
+        except OSError as e:
+            self.logger.error(f"Error saving JSON to file: {e}")
 
     # Load example json if it exists
     example_json_path = os.path.join(
         os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-        "examples",
+        "data",
         "json_example.json",
     )
     if os.path.exists(example_json_path):
@@ -64,8 +64,8 @@ def json_operations(self: Any) -> None:
             print(
                 f"First example type: {example_data.get('examples', [])[0].get('type')}"
             )
-        except Exception as e:
-            self.logger.error(f"Error loading example JSON: {str(e)}")
+        except (OSError, json.JSONDecodeError, KeyError, IndexError) as e:
+            self.logger.error(f"Error loading example JSON: {e}")
 
 
 def regex_patterns(self: Any) -> None:

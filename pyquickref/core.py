@@ -6,7 +6,6 @@ for running Python examples and demonstrations.
 
 import logging
 import os
-from typing import Any, Callable, Optional
 
 # Import all the example methods first
 from pyquickref.examples.advanced import (
@@ -15,6 +14,7 @@ from pyquickref.examples.advanced import (
     regex_patterns,
     thread_execute,
 )
+from pyquickref.examples.collections_ops import collections_example
 from pyquickref.examples.data_structures import (
     conditional_check,
     dict_iterate,
@@ -34,6 +34,12 @@ from pyquickref.examples.functional import (
     lambda_functions,
 )
 from pyquickref.examples.loops import loop_range
+from pyquickref.examples.modern import (
+    dataclass_example,
+    enum_example,
+    generator_example,
+    pattern_matching,
+)
 from pyquickref.examples.strings import string_operations
 
 
@@ -44,7 +50,7 @@ class PyQuickRef:
     """
 
     def run_examples(
-        self: "PyQuickRef", functions_to_run: Optional[list[str]] = None
+        self: "PyQuickRef", functions_to_run: list[str] | None = None
     ) -> None:
         """Run specified examples or all examples if none are specified.
 
@@ -74,7 +80,7 @@ class PyQuickRef:
                     method(self)
 
     def __init__(
-        self: "PyQuickRef", logger: logging.Logger, output_dir: Optional[str] = None
+        self: "PyQuickRef", logger: logging.Logger, output_dir: str | None = None
     ) -> None:
         """Initialize the PyQuickRef instance.
 
@@ -116,43 +122,32 @@ class PyQuickRef:
             self.logger.warning("Output directory is not set. Returning filename only.")
             return filename
 
-    # Define attribute types to satisfy type checking
-    list_iterate: Callable[[Any], None]
-    list_modify: Callable[[Any], None]
-    list_comprehend: Callable[[Any], None]
-    dict_iterate: Callable[[Any], None]
-    set_modify: Callable[[Any], None]
-    tuple_unpack: Callable[[Any], None]
-    conditional_check: Callable[[Any], None]
-    string_operations: Callable[[Any], None]
-    lambda_functions: Callable[[Any], None]
-    decorator_example: Callable[[Any], None]
-    file_write: Callable[[Any], None]
-    context_managers: Callable[[Any], None]
-    error_handle: Callable[[Any], None]
-    json_operations: Callable[[Any], None]
-    regex_patterns: Callable[[Any], None]
-    itertools_examples: Callable[[Any], None]
-    thread_execute: Callable[[Any], None]
-    loop_range: Callable[[Any], None]
 
+_EXAMPLE_METHODS = [
+    list_iterate,
+    list_modify,
+    list_comprehend,
+    dict_iterate,
+    set_modify,
+    tuple_unpack,
+    conditional_check,
+    string_operations,
+    lambda_functions,
+    decorator_example,
+    file_write,
+    context_managers,
+    error_handle,
+    json_operations,
+    regex_patterns,
+    itertools_examples,
+    thread_execute,
+    loop_range,
+    collections_example,
+    dataclass_example,
+    pattern_matching,
+    generator_example,
+    enum_example,
+]
 
-# Add the method implementations to the PyQuickRef class
-PyQuickRef.list_iterate = list_iterate
-PyQuickRef.list_modify = list_modify
-PyQuickRef.list_comprehend = list_comprehend
-PyQuickRef.dict_iterate = dict_iterate
-PyQuickRef.set_modify = set_modify
-PyQuickRef.tuple_unpack = tuple_unpack
-PyQuickRef.conditional_check = conditional_check
-PyQuickRef.string_operations = string_operations
-PyQuickRef.lambda_functions = lambda_functions
-PyQuickRef.decorator_example = decorator_example
-PyQuickRef.file_write = file_write
-PyQuickRef.context_managers = context_managers
-PyQuickRef.error_handle = error_handle
-PyQuickRef.json_operations = json_operations
-PyQuickRef.regex_patterns = regex_patterns
-PyQuickRef.itertools_examples = itertools_examples
-PyQuickRef.thread_execute = thread_execute
-PyQuickRef.loop_range = loop_range
+for _method in _EXAMPLE_METHODS:
+    setattr(PyQuickRef, _method.__name__, _method)

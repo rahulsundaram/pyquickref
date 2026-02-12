@@ -1,6 +1,7 @@
 """Tests for string operations in PyQuickRef."""
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 
 def test_string_operations(quickref: Any, capture_output: Callable) -> None:

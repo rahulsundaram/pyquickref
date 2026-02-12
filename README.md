@@ -3,7 +3,7 @@
 [![Run Tests](https://github.com/rahulsundaram/pyquickref/actions/workflows/run-tests.yml/badge.svg)](https://github.com/rahulsundaram/pyquickref/actions/workflows/run-tests.yml)
 [![Lint](https://github.com/rahulsundaram/pyquickref/actions/workflows/lint.yml/badge.svg)](https://github.com/rahulsundaram/pyquickref/actions/workflows/lint.yml)
 
-PyQuickRef is a Python reference tool showcasing practical examples of Python's most useful features. It serves as both a learning resource and a modern Python development workflow reference, including CI/CD with GitHub Actions, testing with pytest, type checking with mypy, and code quality enforcement with ruff.
+PyQuickRef is a Python reference tool showcasing practical examples of Python's most useful features. It serves as both a learning resource and a modern Python development workflow reference, including CI/CD with GitHub Actions, testing with pytest, type checking with [ty](https://github.com/astral-sh/ty), and code quality enforcement with ruff.
 
 ## Features
 
@@ -11,15 +11,17 @@ PyQuickRef is a Python reference tool showcasing practical examples of Python's 
 - **Modular design** for running specific examples
 - **Comprehensive coverage** of Python features:
   - Data structures: lists, dictionaries, sets, tuples
+  - Collections: Counter, defaultdict, namedtuple, deque
   - String manipulation and formatting
-  - Functional programming: lambda functions, comprehensions
+  - Functional programming: lambda functions, map, filter, decorators
+  - Modern Python: dataclasses, pattern matching, generators, enums
   - Regular expressions, file handling, JSON processing
-  - Error handling, context managers, decorators
-  - Multithreading, itertools utilities
+  - Error handling with custom exceptions, context managers
+  - Multithreading, itertools, loops (enumerate, zip, while)
 - **Configurable output** with logging and output directory support
 - **Complete test suite** ensuring reliability
 - **Modern tooling**:
-  - Type checking with mypy
+  - Type checking with [ty](https://github.com/astral-sh/ty)
   - Linting and formatting with ruff
   - Testing with pytest
   - CI/CD with GitHub Actions
@@ -85,23 +87,12 @@ python main.py --output-dir custom_output
 
 ## Installation
 
-### Using uv (recommended)
-
-[uv](https://github.com/astral-sh/uv) is a fast Python package installer:
+Requires Python 3.10+ and [uv](https://docs.astral.sh/uv/):
 
 ```bash
-pip install uv
 git clone https://github.com/rahulsundaram/pyquickref.git
 cd pyquickref
 uv sync
-```
-
-### Using pip (alternative)
-
-```bash
-git clone https://github.com/rahulsundaram/pyquickref.git
-cd pyquickref
-pip install -e .
 ```
 
 ## Usage
@@ -141,66 +132,55 @@ python main.py --output-dir custom_output
 
 Examples are organized into the following groups:
 
-- **Data Structures**: `list_iterate`, `list_modify`, `dict_iterate`, etc.
+- **Data Structures**: `list_iterate`, `list_modify`, `list_comprehend`, `dict_iterate`, `set_modify`, `tuple_unpack`, `conditional_check`
+- **Collections**: `collections_example` (Counter, defaultdict, namedtuple, deque)
 - **String Operations**: `string_operations`
-- **Functional Programming**: `lambda_functions`
-- **Error Handling**: `error_handle`
+- **Loops**: `loop_range` (range, enumerate, zip, while, break/continue)
+- **Functional Programming**: `lambda_functions`, `decorator_example`, `itertools_examples`
+- **Modern Python**: `dataclass_example`, `pattern_matching`, `generator_example`, `enum_example`
+- **Error Handling**: `error_handle` (try/except/finally, custom exceptions)
 - **File Operations**: `file_write`, `context_managers`
-- **Advanced Features**: `regex_patterns`, `json_operations`, `decorator_example`, etc.
+- **Advanced**: `regex_patterns`, `json_operations`, `thread_execute`
 
 ## Development
 
-### Setting up the Development Environment
-
-Run the setup script:
+### Setup
 
 ```bash
-chmod +x scripts/setup_dev.sh
-./scripts/setup_dev.sh
+uv sync              # install all dependencies
+pre-commit install   # enable pre-commit hooks
 ```
 
-This installs dependencies, sets up pre-commit hooks, and makes test scripts executable.
-
-### Running Tests and Linting
-
-Run all tests and linting:
+### Running Checks
 
 ```bash
-./scripts/run_tests.sh
+make check           # run all checks (lint + format + typecheck + test)
+make lint            # ruff linter only
+make format          # auto-format with ruff
+make typecheck       # ty type checker only
+make test            # pytest only
 ```
 
-Run specific tests:
+Or run individual tools directly:
 
 ```bash
-uv run pytest
-uv run pytest -v
 uv run pytest tests/test_data_structures.py::test_list_iterate
 ```
 
 ### Code Style
 
-This project uses:
+This project uses the [Astral](https://astral.sh/) toolchain:
 
-- [uv](https://github.com/astral-sh/uv) for dependency management
-- [Ruff](https://github.com/astral-sh/ruff) for linting and formatting
-- mypy for type checking
-
-Commands:
-
-```bash
-uv run ruff format .
-uv run ruff check .
-uv run mypy .
-```
+- [uv](https://docs.astral.sh/uv/) for dependency management
+- [ruff](https://docs.astral.sh/ruff/) for linting and formatting
+- [ty](https://docs.astral.sh/ty/) for type checking
 
 ## Contributing
 
-Contributions are welcome! To contribute:
-
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (format with `ruff format .`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+3. Run `make check` to verify all checks pass
+4. Commit and push
 5. Open a Pull Request
 
 ## License

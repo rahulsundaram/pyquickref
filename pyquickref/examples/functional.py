@@ -4,24 +4,26 @@ This module contains examples demonstrating Python's functional programming feat
 including lambda functions, decorators, and higher-order functions.
 """
 
+import time
+from collections.abc import Callable
 from functools import wraps
-from typing import Any, Callable
+from typing import Any
 
 
 def lambda_functions(self: Any) -> None:
     """Demonstrate the use of lambda functions in Python."""
     self.logger.info("Demonstrating lambda functions")
     # Simple lambda
-    square = lambda x: x**2  # noqa: E731
+    square = lambda x: x**2
     result = square(5)
     self.logger.debug(f"Lambda square result: {result}")
     print(f"Square of 5: {result}")
 
-    # Lambda with list operations
+    # Map with a callable
     numbers = [1, 2, 3, 4, 5]
-    squared_numbers = [x**2 for x in numbers]
+    squared_numbers = list(map(square, numbers))
     print(f"Original numbers: {numbers}")
-    print(f"Squared numbers: {squared_numbers}")
+    print(f"Squared (via map): {squared_numbers}")
 
     # Lambda with filter
     even_numbers = list(filter(lambda x: x % 2 == 0, numbers))
@@ -41,19 +43,17 @@ def decorator_example(self: Any) -> None:
 
     # Define a decorator
     def timer_decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+        func_name = getattr(func, "__name__", repr(func))
+
         @wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
-            import time
-
-            self.logger.debug(f"Starting timing for {func.__name__}")
+            self.logger.debug(f"Starting timing for {func_name}")
             start_time = time.time()
             result = func(*args, **kwargs)
             end_time = time.time()
             elapsed = end_time - start_time
-            self.logger.info(
-                f"Function {func.__name__} took {elapsed:.4f} seconds to run"
-            )
-            print(f"Function {func.__name__} took {elapsed:.4f} seconds to run")
+            self.logger.info(f"Function {func_name} took {elapsed:.4f} seconds to run")
+            print(f"Function {func_name} took {elapsed:.4f} seconds to run")
             return result
 
         return wrapper
@@ -61,8 +61,6 @@ def decorator_example(self: Any) -> None:
     # Apply the decorator to a function
     @timer_decorator
     def slow_function(delay: float) -> str:
-        import time
-
         self.logger.debug(f"Sleeping for {delay} seconds")
         time.sleep(delay)
         return f"Function slept for {delay} seconds"
@@ -74,9 +72,11 @@ def decorator_example(self: Any) -> None:
     # Define a decorator with arguments
     def repeat(times: int) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
         def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+            func_name = getattr(func, "__name__", repr(func))
+
             @wraps(func)
             def wrapper(*args: Any, **kwargs: Any) -> list[Any]:
-                self.logger.debug(f"Repeating {func.__name__} {times} times")
+                self.logger.debug(f"Repeating {func_name} {times} times")
                 results = []
                 for i in range(times):
                     self.logger.debug(f"Repeat {i + 1}/{times}")
