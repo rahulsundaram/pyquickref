@@ -5,6 +5,7 @@ Real-world utility patterns: retry, timeout, pipeline, batching, and more.
 
 import os
 import random
+import threading
 import time
 from collections import ChainMap
 from collections.abc import Callable, Iterator
@@ -18,45 +19,42 @@ from pyquickref.registry import example, show
 
 @example(
     "Practical Patterns",
-    "Retry decorator with exponential backoff and jitter",
+    "Retry with exponential backoff and jitter",
     doc_url="https://docs.python.org/3/library/time.html#time.sleep",
 )
 def retry_backoff() -> None:
     """Demonstrate retry with exponential backoff."""
 
     def retry(
-        max_attempts: int = 3, base_delay: float = 0.01
-    ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
-        def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
-            @wraps(func)
-            def wrapper(*args: Any, **kwargs: Any) -> Any:
-                for attempt in range(1, max_attempts + 1):
-                    try:
-                        return func(*args, **kwargs)
-                    except Exception as e:
-                        if attempt == max_attempts:
-                            raise
-                        delay = base_delay * (2 ** (attempt - 1))
-                        jitter = random.uniform(0, delay * 0.1)
-                        time.sleep(delay + jitter)
-                        print(f"  Attempt {attempt} failed: {e}, retrying...")
-                return None
-
-            return wrapper
-
-        return decorator
+        func: Callable[..., Any],
+        max_attempts: int = 3,
+        base_delay: float = 0.01,
+    ) -> Any:
+        for attempt in range(1, max_attempts + 1):
+            try:
+                return func()
+            except Exception as e:
+                if attempt == max_attempts:
+                    raise
+                delay = base_delay * (2 ** (attempt - 1))
+                jitter = random.uniform(0, delay * 0.1)
+                time.sleep(delay + jitter)
+                print(f"  Attempt {attempt} failed: {e}, retrying...")
+        return None
 
     show(
-        "@retry(max_attempts=3, base_delay=0.01)\n"
-        "def flaky_operation():\n"
-        "    if random.random() < 0.7:\n"
-        '        raise ConnectionError("timeout")\n'
-        '    return "success"'
+        "def retry(func, max_attempts=3, base_delay=0.01):\n"
+        "    for attempt in range(1, max_attempts + 1):\n"
+        "        try:\n"
+        "            return func()\n"
+        "        except Exception as e:\n"
+        "            if attempt == max_attempts: raise\n"
+        "            delay = base_delay * (2 ** (attempt - 1))\n"
+        "            time.sleep(delay + random.uniform(0, delay * 0.1))"
     )
 
     call_count = 0
 
-    @retry(max_attempts=5, base_delay=0.01)
     def flaky_operation() -> str:
         nonlocal call_count
         call_count += 1
@@ -65,69 +63,52 @@ def retry_backoff() -> None:
             raise ConnectionError(msg)
         return "success"
 
-    result = flaky_operation()
+    result = retry(flaky_operation, max_attempts=5, base_delay=0.01)
     print(f"  Result: {result} (after {call_count} attempts)")
 
 
 @example(
     "Practical Patterns",
-    "Timeout decorator using threading for time-limited execution",
+    "Run a function with a time limit using threading",
     doc_url="https://docs.python.org/3/library/threading.html#timer-objects",
 )
 def timeout_wrapper() -> None:
     """Demonstrate timeout wrapper using threading."""
-    import threading
 
     class OperationTimeoutError(Exception):
         pass
 
-    def with_timeout(
-        seconds: float,
-    ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
-        def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
-            @wraps(func)
-            def wrapper(*args: Any, **kwargs: Any) -> Any:
-                result: list[Any] = []
-                exception: list[Exception] = []
+    def run_with_timeout(func: Callable[..., Any], seconds: float) -> Any:
+        result: list[Any] = []
+        exception: list[Exception] = []
 
-                def target() -> None:
-                    try:
-                        result.append(func(*args, **kwargs))
-                    except Exception as e:
-                        exception.append(e)
+        def target() -> None:
+            try:
+                result.append(func())
+            except Exception as e:
+                exception.append(e)
 
-                thread = threading.Thread(target=target)
-                thread.start()
-                thread.join(timeout=seconds)
-                if thread.is_alive():
-                    raise OperationTimeoutError(f"Timed out after {seconds}s")
-                if exception:
-                    raise exception[0]
-                return result[0] if result else None
-
-            return wrapper
-
-        return decorator
+        thread = threading.Thread(target=target)
+        thread.start()
+        thread.join(timeout=seconds)
+        if thread.is_alive():
+            raise OperationTimeoutError(f"Timed out after {seconds}s")
+        if exception:
+            raise exception[0]
+        return result[0] if result else None
 
     show(
-        "@with_timeout(seconds=1.0)\n"
-        "def slow_query():\n"
-        "    time.sleep(5)\n"
-        '    return "done"'
+        "def run_with_timeout(func, seconds):\n"
+        "    thread = threading.Thread(target=...)\n"
+        "    thread.start()\n"
+        "    thread.join(timeout=seconds)\n"
+        "    if thread.is_alive():\n"
+        '        raise OperationTimeoutError("Timed out")'
     )
 
-    @with_timeout(seconds=0.5)
-    def fast_operation() -> str:
-        return "fast result"
-
-    @with_timeout(seconds=0.05)
-    def slow_operation() -> str:
-        time.sleep(1)
-        return "never returned"
-
-    print(f"  Fast: {fast_operation()}")
+    print(f"  Fast: {run_with_timeout(lambda: 'fast result', seconds=0.5)}")
     try:
-        slow_operation()
+        run_with_timeout(lambda: time.sleep(1) or "never", seconds=0.05)
     except OperationTimeoutError as e:
         print(f"  Slow: {e}")
 
