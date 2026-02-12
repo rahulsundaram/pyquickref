@@ -30,6 +30,7 @@ def retry_backoff() -> None:
         max_attempts: int = 3,
         base_delay: float = 0.01,
     ) -> Any:
+        """Call func with retries, exponential backoff, and jitter."""
         for attempt in range(1, max_attempts + 1):
             try:
                 return func()
@@ -42,20 +43,12 @@ def retry_backoff() -> None:
                 print(f"  Attempt {attempt} failed: {e}, retrying...")
         return None
 
-    show(
-        "def retry(func, max_attempts=3, base_delay=0.01):\n"
-        "    for attempt in range(1, max_attempts + 1):\n"
-        "        try:\n"
-        "            return func()\n"
-        "        except Exception as e:\n"
-        "            if attempt == max_attempts: raise\n"
-        "            delay = base_delay * (2 ** (attempt - 1))\n"
-        "            time.sleep(delay + random.uniform(0, delay * 0.1))"
-    )
+    show(retry)
 
     call_count = 0
 
     def flaky_operation() -> str:
+        """Simulate an unreliable network call that fails twice."""
         nonlocal call_count
         call_count += 1
         if call_count < 3:
@@ -76,9 +69,10 @@ def timeout_wrapper() -> None:
     """Demonstrate timeout wrapper using threading."""
 
     class OperationTimeoutError(Exception):
-        pass
+        """Raised when a function exceeds its time limit."""
 
     def run_with_timeout(func: Callable[..., Any], seconds: float) -> Any:
+        """Run func in a thread, raising OperationTimeoutError if it exceeds seconds."""
         result: list[Any] = []
         exception: list[Exception] = []
 
@@ -97,14 +91,7 @@ def timeout_wrapper() -> None:
             raise exception[0]
         return result[0] if result else None
 
-    show(
-        "def run_with_timeout(func, seconds):\n"
-        "    thread = threading.Thread(target=...)\n"
-        "    thread.start()\n"
-        "    thread.join(timeout=seconds)\n"
-        "    if thread.is_alive():\n"
-        '        raise OperationTimeoutError("Timed out")'
-    )
+    show(run_with_timeout)
 
     print(f"  Fast: {run_with_timeout(lambda: 'fast result', seconds=0.5)}")
     try:
@@ -123,18 +110,14 @@ def pipeline_pattern() -> None:
     from functools import reduce
 
     def pipeline(*steps: Callable[..., Any]) -> Callable[..., Any]:
+        """Chain functions into a left-to-right data pipeline."""
+
         def run(data: Any) -> Any:
             return reduce(lambda d, step: step(d), steps, data)
 
         return run
 
-    show(
-        "def pipeline(*steps):\n"
-        "    def run(data):\n"
-        "        return reduce(lambda d, step: step(d), steps, data)\n"
-        "    return run\n\n"
-        "process = pipeline(str.strip, str.lower, str.title)"
-    )
+    show(pipeline)
 
     process_name = pipeline(str.strip, str.lower, str.title)
     print(f"  '  JOHN DOE  ' → {process_name('  JOHN DOE  ')!r}")
@@ -157,18 +140,14 @@ def batch_processing() -> None:
     """Demonstrate batch processing with chunked iteration."""
 
     def batched(iterable: Any, n: int) -> Iterator[list[Any]]:
+        """Yield fixed-size chunks from an iterable."""
         from itertools import islice
 
         it = iter(iterable)
         while batch := list(islice(it, n)):
             yield batch
 
-    show(
-        "def batched(iterable, n):\n"
-        "    it = iter(iterable)\n"
-        "    while batch := list(islice(it, n)):\n"
-        "        yield batch"
-    )
+    show(batched)
 
     items = list(range(1, 11))
     print(f"  Items: {items}")
@@ -268,12 +247,15 @@ def guard_clauses() -> None:
 
     @dataclass
     class User:
+        """A user with activation, verification, and age fields."""
+
         name: str
         active: bool = True
         verified: bool = True
         age: int = 25
 
     def validate_user(user: User | None) -> str:
+        """Return an error message for invalid users, or 'ok' if valid."""
         if user is None:
             return "error: no user"
         if not user.active:
@@ -305,24 +287,20 @@ def immutable_data() -> None:
 
     @dataclass(frozen=True)
     class Point:
+        """An immutable 2D point."""
+
         x: float
         y: float
 
     class Color(NamedTuple):
+        """An immutable RGB color."""
+
         r: int
         g: int
         b: int
 
-    show(
-        "@dataclass(frozen=True)\n"
-        "class Point:\n"
-        "    x: float\n"
-        "    y: float\n\n"
-        "class Color(NamedTuple):\n"
-        "    r: int\n"
-        "    g: int\n"
-        "    b: int"
-    )
+    show(Point)
+    show(Color)
 
     p = Point(3.0, 4.0)
     print(f"  Point: {p}")
@@ -345,19 +323,34 @@ def immutable_data() -> None:
 )
 def memoize_pattern() -> None:
     """Demonstrate memoization patterns."""
-    show(
-        "# Manual memoization\n"
-        "def memoize(func):\n"
-        "    cache = {}\n"
-        "    def wrapper(*args):\n"
-        "        if args not in cache:\n"
-        "            cache[args] = func(*args)\n"
-        "        return cache[args]\n"
-        "    return wrapper\n\n"
-        "# Or use lru_cache\n"
-        "@lru_cache(maxsize=128)\n"
-        "def fibonacci(n): ..."
-    )
+
+    def memoize(
+        func: Callable[..., Any],
+    ) -> Callable[..., Any]:
+        """Cache function results by arguments."""
+        cache: dict[Any, Any] = {}
+
+        @wraps(func)
+        def wrapper(*args: Any) -> Any:
+            if args not in cache:
+                cache[args] = func(*args)
+            return cache[args]
+
+        wrapper.cache = cache  # type: ignore[attr-defined]
+        return wrapper
+
+    show(memoize)
+
+    @memoize
+    def expensive(n: int) -> int:
+        return n * n
+
+    expensive(5)
+    expensive(5)
+    expensive(10)
+    print(f"  Manual cache: {expensive.cache}")  # type: ignore[attr-defined]
+
+    show("# Or use lru_cache\n@lru_cache(maxsize=128)\ndef fibonacci(n): ...")
 
     call_count = 0
 
@@ -374,26 +367,3 @@ def memoize_pattern() -> None:
     print(f"  Function calls: {call_count} (not 2^30!)")
     info = fib.cache_info()
     print(f"  Cache: hits={info.hits}, misses={info.misses}, size={info.currsize}")
-
-    def memoize(
-        func: Callable[..., Any],
-    ) -> Callable[..., Any]:
-        cache: dict[Any, Any] = {}
-
-        @wraps(func)
-        def wrapper(*args: Any) -> Any:
-            if args not in cache:
-                cache[args] = func(*args)
-            return cache[args]
-
-        wrapper.cache = cache  # type: ignore[attr-defined]
-        return wrapper
-
-    @memoize
-    def expensive(n: int) -> int:
-        return n * n
-
-    expensive(5)
-    expensive(5)
-    expensive(10)
-    print(f"  Manual cache: {expensive.cache}")  # type: ignore[attr-defined]

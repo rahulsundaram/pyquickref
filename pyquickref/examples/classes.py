@@ -15,46 +15,40 @@ from pyquickref.registry import example, show
 def class_basics() -> None:
     """Demonstrate class definitions, inheritance, and class methods."""
 
-    # Basic class
     class Animal:
+        """A basic animal with a name and sound."""
+
         def __init__(self, name: str, sound: str) -> None:
             self.name = name
             self.sound = sound
 
         def speak(self) -> str:
+            """Return what the animal says."""
             return f"{self.name} says {self.sound}"
 
-    show(
-        "class Animal:\n"
-        "    def __init__(self, name, sound):\n"
-        "        self.name = name\n"
-        "        self.sound = sound\n\n"
-        "    def speak(self):\n"
-        "        return f'{self.name} says {self.sound}'"
-    )
+    show(Animal)
     cat = Animal("Cat", "meow")
     print(cat.speak())
 
     class Dog(Animal):
+        """A dog that inherits from Animal."""
+
         def __init__(self, name: str, breed: str) -> None:
             super().__init__(name, "woof")
             self.breed = breed
 
         def fetch(self) -> str:
+            """Return a string about fetching."""
             return f"{self.name} the {self.breed} fetches the ball!"
 
-    show(
-        "class Dog(Animal):\n"
-        "    def __init__(self, name, breed):\n"
-        "        super().__init__(name, 'woof')\n"
-        "        self.breed = breed"
-    )
+    show(Dog)
     dog = Dog("Rex", "Labrador")
     print(dog.speak())
     print(dog.fetch())
 
-    # @classmethod and @staticmethod
     class Circle:
+        """A circle defined by its radius."""
+
         def __init__(self, radius: float) -> None:
             self.radius = radius
 
@@ -64,25 +58,26 @@ def class_basics() -> None:
 
         @staticmethod
         def area_formula() -> str:
+            """Return the formula for circle area."""
             return "A = pi * r^2"
 
-    show(
-        "@classmethod\ndef from_diameter(cls, diameter):\n    return cls(diameter / 2)"
-    )
+    show(Circle)
     c = Circle.from_diameter(10)
     print(f"Circle(diameter=10) → radius={c.radius}")
     print(f"Formula: {Circle.area_formula()}")
 
-    # Properties
     class Temperature:
+        """A temperature in Celsius with Fahrenheit conversion."""
+
         def __init__(self, celsius: float) -> None:
             self._celsius = celsius
 
         @property
         def fahrenheit(self) -> float:
+            """Convert to Fahrenheit."""
             return self._celsius * 9 / 5 + 32
 
-    show("@property\ndef fahrenheit(self):\n    return self._celsius * 9 / 5 + 32")
+    show(Temperature)
     t = Temperature(100)
     print(f"100°C = {t.fahrenheit}°F")
 
@@ -96,6 +91,8 @@ def dunder_methods() -> None:
     """Demonstrate special (dunder) methods."""
 
     class Vector:
+        """A 2D vector with arithmetic operations."""
+
         def __init__(self, x: float, y: float) -> None:
             self.x = x
             self.y = y
@@ -120,12 +117,7 @@ def dunder_methods() -> None:
         def __len__(self) -> int:
             return 2
 
-    show(
-        "class Vector:\n"
-        "    def __repr__(self): return f'Vector({self.x}, {self.y})'\n"
-        "    def __add__(self, other): return Vector(self.x + other.x, ...)\n"
-        "    def __eq__(self, other): return self.x == other.x and ..."
-    )
+    show(Vector)
 
     v1 = Vector(1, 2)
     v2 = Vector(3, 4)

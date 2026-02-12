@@ -207,8 +207,18 @@ def examples_in_lesson_order() -> list[ExampleInfo]:
     return result
 
 
-def show(code: str, result: Any = None) -> None:
-    """Print a code snippet (plain, copy-pasteable) and optional result."""
+def show(code: str | Callable[..., Any] | type, result: Any = None) -> None:
+    """Print a code snippet (plain, copy-pasteable) and optional result.
+
+    Accepts a string, function, or class.  When given a callable or type,
+    the source is extracted automatically via ``inspect.getsource()``.
+    """
+    if not isinstance(code, str):
+        import inspect
+        import textwrap
+
+        code = textwrap.dedent(inspect.getsource(code))
+
     print()
     for line in code.strip().splitlines():
         print(f"    {line}")

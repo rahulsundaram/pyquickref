@@ -182,6 +182,7 @@ def references_copies() -> None:
 
     # Mutable default argument pitfall
     def bad_append(item: int, lst: list[int] = []) -> list[int]:  # noqa: B006
+        """Append item to lst — demonstrates the mutable default pitfall."""
         lst.append(item)
         return lst
 

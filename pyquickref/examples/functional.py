@@ -20,45 +20,41 @@ from pyquickref.registry import example, show
 def function_basics() -> None:
     """Demonstrate function definitions, arguments, and return values."""
 
-    # Basic function
     def greet(name: str) -> str:
+        """Return a greeting for the given name."""
         return f"Hello, {name}!"
 
-    show("def greet(name):\n    return f'Hello, {name}!'")
+    show(greet)
     print(greet("World"))
 
-    # Default arguments
     def power(base: int, exp: int = 2) -> int:
+        """Return base raised to exp (default: squared)."""
         return base**exp
 
-    show("def power(base, exp=2):\n    return base ** exp")
+    show(power)
     print(f"power(3)    = {power(3)}")
     print(f"power(3, 3) = {power(3, 3)}")
 
-    # *args — variable positional arguments
     def total(*args: int) -> int:
+        """Return the sum of all arguments."""
         return sum(args)
 
-    show("def total(*args):\n    return sum(args)")
+    show(total)
     print(f"total(1, 2, 3) = {total(1, 2, 3)}")
 
-    # **kwargs — variable keyword arguments
     def build_url(base: str, **params: str) -> str:
+        """Build a URL with query parameters from keyword arguments."""
         query = "&".join(f"{k}={v}" for k, v in params.items())
         return f"{base}?{query}" if query else base
 
-    show(
-        "def build_url(base, **params):\n"
-        "    query = '&'.join(f'{k}={v}' for k, v in params.items())\n"
-        "    return f'{base}?{query}'"
-    )
+    show(build_url)
     print(build_url("https://api.example.com", page="1", limit="10"))
 
-    # Multiple return values
     def min_max(items: list[int]) -> tuple[int, int]:
+        """Return the min and max of a list as a tuple."""
         return min(items), max(items)
 
-    show("def min_max(items):\n    return min(items), max(items)")
+    show(min_max)
     lo, hi = min_max([3, 1, 4, 1, 5, 9])
     print(f"min={lo}, max={hi}")
 
@@ -70,13 +66,11 @@ def function_basics() -> None:
 )
 def builtin_functions() -> None:
     """Demonstrate commonly-used builtin functions."""
-    # any / all
     nums = [2, 4, 6, 8]
     show("nums = [2, 4, 6, 8]\nall(n % 2 == 0 for n in nums)")
     print(f"All even? {all(n % 2 == 0 for n in nums)}")
     print(f"Any > 5?  {any(n > 5 for n in nums)}")
 
-    # sorted with key
     words = ["banana", "apple", "cherry", "date"]
     show("sorted(words, key=len)")
     print(f"By length: {sorted(words, key=len)}")
@@ -84,7 +78,6 @@ def builtin_functions() -> None:
     show("sorted(words, key=str.lower, reverse=True)")
     print(f"Reverse alpha: {sorted(words, key=str.lower, reverse=True)}")
 
-    # min/max with key
     people = [("Alice", 30), ("Bob", 25), ("Charlie", 35)]
     show("min(people, key=lambda p: p[1])")
     youngest = min(people, key=lambda p: p[1])
@@ -100,10 +93,10 @@ def builtin_functions() -> None:
 )
 def scope_closures() -> None:
     """Demonstrate scope rules and closures."""
-    # LEGB: Local, Enclosing, Global, Built-in
     x = "global"
 
     def outer() -> str:
+        """Show LEGB scope resolution with nested functions."""
         x = "enclosing"
 
         def inner() -> str:
@@ -112,18 +105,11 @@ def scope_closures() -> None:
 
         return f"inner={inner()}, enclosing={x}"
 
-    show(
-        "x = 'global'\n"
-        "def outer():\n"
-        "    x = 'enclosing'\n"
-        "    def inner():\n"
-        "        x = 'local'\n"
-        "        return x"
-    )
+    show(outer)
     print(f"LEGB: {outer()}, global={x}")
 
-    # nonlocal — modify enclosing scope
     def counter() -> Callable[[], int]:
+        """Return a closure that increments on each call."""
         count = 0
 
         def increment() -> int:
@@ -133,23 +119,15 @@ def scope_closures() -> None:
 
         return increment
 
-    show(
-        "def counter():\n"
-        "    count = 0\n"
-        "    def increment():\n"
-        "        nonlocal count\n"
-        "        count += 1\n"
-        "        return count\n"
-        "    return increment"
-    )
+    show(counter)
     c = counter()
     print(f"Closure: {c()}, {c()}, {c()}")
 
-    # Closure capturing a variable
     def make_multiplier(factor: int) -> Callable[[int], int]:
+        """Return a function that multiplies by factor."""
         return lambda x: x * factor
 
-    show("def make_multiplier(factor):\n    return lambda x: x * factor")
+    show(make_multiplier)
     double = make_multiplier(2)
     triple = make_multiplier(3)
     print(f"double(5) = {double(5)}, triple(5) = {triple(5)}")
@@ -164,14 +142,15 @@ def recursion_example() -> None:
     """Demonstrate recursive functions."""
 
     def factorial(n: int) -> int:
+        """Return n! using recursion."""
         return 1 if n <= 1 else n * factorial(n - 1)
 
-    show("def factorial(n):\n    return 1 if n <= 1 else n * factorial(n - 1)")
+    show(factorial)
     print(f"factorial(5) = {factorial(5)}")
     print(f"factorial(10) = {factorial(10)}")
 
-    # Recursive flatten
     def flatten(lst: list[Any]) -> list[Any]:
+        """Recursively flatten nested lists into a single list."""
         result: list[Any] = []
         for item in lst:
             if isinstance(item, list):
@@ -180,16 +159,7 @@ def recursion_example() -> None:
                 result.append(item)
         return result
 
-    show(
-        "def flatten(lst):\n"
-        "    result = []\n"
-        "    for item in lst:\n"
-        "        if isinstance(item, list):\n"
-        "            result.extend(flatten(item))\n"
-        "        else:\n"
-        "            result.append(item)\n"
-        "    return result"
-    )
+    show(flatten)
     nested = [1, [2, 3], [4, [5, 6]], 7]
     print(f"flatten({nested}) = {flatten(nested)}")
 
@@ -201,25 +171,21 @@ def recursion_example() -> None:
 )
 def lambda_functions() -> None:
     """Demonstrate the use of lambda functions in Python."""
-    # Simple lambda
     square = lambda x: x**2
     result = square(5)
     show("square = lambda x: x**2\nsquare(5)")
     print(f"Square of 5: {result}")
 
-    # Map with a callable
     numbers = [1, 2, 3, 4, 5]
     squared_numbers = list(map(square, numbers))
     show("list(map(square, [1, 2, 3, 4, 5]))")
     print(f"Original numbers: {numbers}")
     print(f"Squared (via map): {squared_numbers}")
 
-    # Lambda with filter
     even_numbers = list(filter(lambda x: x % 2 == 0, numbers))
     show("list(filter(lambda x: x % 2 == 0, numbers))")
     print(f"Even numbers: {even_numbers}")
 
-    # Lambda with sorted
     people = [("Alice", 25), ("Bob", 20), ("Charlie", 30)]
     sorted_by_age = sorted(people, key=lambda person: person[1])
     show("sorted(people, key=lambda person: person[1])")
@@ -234,8 +200,8 @@ def lambda_functions() -> None:
 def decorator_example() -> None:
     """Demonstrate the use of decorators in Python."""
 
-    # Define a decorator
     def timer_decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+        """Print how long a function takes to run."""
         func_name = getattr(func, "__name__", repr(func))
 
         @wraps(func)
@@ -248,7 +214,7 @@ def decorator_example() -> None:
 
         return wrapper
 
-    show("@timer_decorator\ndef slow_function(delay):\n    time.sleep(delay)")
+    show(timer_decorator)
 
     @timer_decorator
     def slow_function(delay: float) -> str:
@@ -258,8 +224,9 @@ def decorator_example() -> None:
     result = slow_function(0.5)
     print(result)
 
-    # Decorator with arguments
     def repeat(times: int) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+        """Repeat a function call n times, collecting results."""
+
         def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
             @wraps(func)
             def wrapper(*args: Any, **kwargs: Any) -> list[Any]:
@@ -269,7 +236,7 @@ def decorator_example() -> None:
 
         return decorator
 
-    show("@repeat(times=3)\ndef greet(name):\n    return f'Hello, {name}!'")
+    show(repeat)
 
     @repeat(times=3)
     def greet(name: str) -> str:

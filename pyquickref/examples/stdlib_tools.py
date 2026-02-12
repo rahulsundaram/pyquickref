@@ -70,17 +70,14 @@ def datetime_example() -> None:
 )
 def functools_example() -> None:
     """Demonstrate functools utilities."""
-    # lru_cache
-    show(
-        "@lru_cache(maxsize=128)\n"
-        "def fib(n):\n"
-        "    return n if n < 2 else fib(n-1) + fib(n-2)"
-    )
 
+    # lru_cache
     @lru_cache(maxsize=128)
     def fib(n: int) -> int:
+        """Return the nth Fibonacci number."""
         return n if n < 2 else fib(n - 1) + fib(n - 2)
 
+    show(fib)
     print(f"fib(10) = {fib(10)}")
     print(f"cache_info: {fib.cache_info()}")
 
@@ -88,6 +85,7 @@ def functools_example() -> None:
     show("double = partial(mul, 2)")
 
     def mul(a: int, b: int) -> int:
+        """Multiply two numbers."""
         return a * b
 
     double = partial(mul, 2)
@@ -108,15 +106,13 @@ def asyncio_example() -> None:
     """Demonstrate async/await and asyncio.gather."""
 
     async def fetch(name: str, delay: float) -> str:
+        """Simulate an async network request."""
         await asyncio.sleep(delay)
         return f"{name} done ({delay}s)"
 
     async def main() -> None:
-        show(
-            "async def fetch(name, delay):\n"
-            "    await asyncio.sleep(delay)\n"
-            "    return f'{name} done'"
-        )
+        """Run sequential and concurrent async tasks."""
+        show(fetch)
         # Sequential
         show("result = await fetch('A', 0.1)")
         result = await fetch("A", 0.1)

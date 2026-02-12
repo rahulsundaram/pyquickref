@@ -48,16 +48,9 @@ def context_managers(output_dir: str) -> None:
         print(f"Error writing to file: {e}")
 
     # Custom context manager using contextlib
-    show(
-        "@contextlib.contextmanager\n"
-        "def string_io():\n"
-        "    output = io.StringIO()\n"
-        "    try:\n        yield output\n"
-        "    finally:\n        print(output.getvalue())"
-    )
-
     @contextlib.contextmanager
     def string_io() -> Iterator[io.StringIO]:
+        """Context manager that captures writes to an in-memory string buffer."""
         output = io.StringIO()
         try:
             yield output
@@ -66,5 +59,6 @@ def context_managers(output_dir: str) -> None:
             output.close()
             print(f"Captured: {value}")
 
+    show(string_io)
     with string_io() as s:
         s.write("Hello, context manager!")
