@@ -3,7 +3,7 @@
 [![Run Tests](https://github.com/rahulsundaram/pyquickref/actions/workflows/run-tests.yml/badge.svg)](https://github.com/rahulsundaram/pyquickref/actions/workflows/run-tests.yml)
 [![Lint](https://github.com/rahulsundaram/pyquickref/actions/workflows/lint.yml/badge.svg)](https://github.com/rahulsundaram/pyquickref/actions/workflows/lint.yml)
 
-Learn Python by example — 46 examples across 10 lessons, from basic types to design patterns. Each example shows copy-pasteable code then output. Inspired by [Go by Example](https://gobyexample.com).
+Learn Python by example — 58 examples across 11 lessons, from basic types to design patterns. Each example shows copy-pasteable code then output. Inspired by [Go by Example](https://gobyexample.com).
 
 ## Quick Start
 
@@ -11,7 +11,7 @@ Learn Python by example — 46 examples across 10 lessons, from basic types to d
 git clone https://github.com/rahulsundaram/pyquickref.git
 cd pyquickref
 uv sync && source .venv/bin/activate
-pyquickref                     # run all 10 lessons in order
+pyquickref                     # run all 11 lessons in order
 pyquickref --list              # show the lesson plan
 pyquickref --lesson 1          # run lesson 1 only
 ```
@@ -70,7 +70,8 @@ cherry
 7. **File I/O & Data Formats** ([docs](https://docs.python.org/3/tutorial/inputoutput.html)) — `file_write`, `context_managers`, `json_operations`, `regex_patterns`, `itertools_examples`, `thread_execute`
 8. **Modern Python** ([docs](https://docs.python.org/3/whatsnew/3.10.html)) — `dataclass_example`, `pattern_matching`, `generator_example`, `enum_example`, `walrus_operator`, `type_hints`
 9. **Standard Library** ([docs](https://docs.python.org/3/library/index.html)) — `pathlib_example`, `datetime_example`, `functools_example`, `asyncio_example`
-10. **Design Patterns** ([docs](https://docs.python.org/3/library/abc.html)) — `factory_pattern`, `strategy_pattern`, `observer_pattern`
+10. **Design Patterns** ([docs](https://refactoring.guru/design-patterns/python)) — `factory_pattern`, `strategy_pattern`, `observer_pattern`, `builder_pattern`, `producer_consumer`, `rate_limiter`
+11. **Practical Patterns** ([docs](https://docs.python.org/3/library/functools.html)) — `retry_backoff`, `timeout_wrapper`, `pipeline_pattern`, `batch_processing`, `groupby_aggregate`, `config_cascade`, `guard_clauses`, `immutable_data`, `memoize_pattern`
 
 ## Adding a New Example
 

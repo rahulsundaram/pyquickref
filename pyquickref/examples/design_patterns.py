@@ -1,9 +1,12 @@
 """Design pattern examples for PyQuickRef.
 
-Factory, strategy, and observer patterns in Python.
+Factory, strategy, observer, builder, producer/consumer, and rate limiter.
 Docs: https://refactoring.guru/design-patterns/python
 """
 
+import queue
+import threading
+import time
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -126,3 +129,178 @@ def observer_pattern() -> None:
 
     emitter.emit("login", "Alice")
     emitter.emit("logout", "Alice")
+
+
+@example(
+    "Design Patterns",
+    "Step-by-step object construction with a fluent builder API",
+    doc_url="https://refactoring.guru/design-patterns/builder/python",
+)
+def builder_pattern() -> None:
+    """Demonstrate the builder pattern with fluent interface."""
+
+    @dataclass
+    class HttpRequest:
+        method: str = "GET"
+        url: str = ""
+        headers: dict[str, str] = field(default_factory=dict)
+        body: str = ""
+        timeout: float = 30.0
+
+    class RequestBuilder:
+        def __init__(self: "RequestBuilder") -> None:
+            self._request = HttpRequest()
+
+        def method(self: "RequestBuilder", method: str) -> "RequestBuilder":
+            self._request.method = method
+            return self
+
+        def url(self: "RequestBuilder", url: str) -> "RequestBuilder":
+            self._request.url = url
+            return self
+
+        def header(self: "RequestBuilder", key: str, value: str) -> "RequestBuilder":
+            self._request.headers[key] = value
+            return self
+
+        def body(self: "RequestBuilder", body: str) -> "RequestBuilder":
+            self._request.body = body
+            return self
+
+        def timeout(self: "RequestBuilder", seconds: float) -> "RequestBuilder":
+            self._request.timeout = seconds
+            return self
+
+        def build(self: "RequestBuilder") -> HttpRequest:
+            if not self._request.url:
+                msg = "URL is required"
+                raise ValueError(msg)
+            return self._request
+
+    show(
+        "request = (RequestBuilder()\n"
+        "    .method('POST')\n"
+        "    .url('https://api.example.com/users')\n"
+        "    .header('Content-Type', 'application/json')\n"
+        '    .body(\'{"name": "Alice"}\')\n'
+        "    .timeout(10.0)\n"
+        "    .build())"
+    )
+
+    req = (
+        RequestBuilder()
+        .method("POST")
+        .url("https://api.example.com/users")
+        .header("Content-Type", "application/json")
+        .header("Authorization", "Bearer token123")
+        .body('{"name": "Alice"}')
+        .timeout(10.0)
+        .build()
+    )
+    print(f"  {req.method} {req.url}")
+    print(f"  Headers: {req.headers}")
+    print(f"  Body: {req.body}")
+    print(f"  Timeout: {req.timeout}s")
+
+
+@example(
+    "Design Patterns",
+    "Producer/consumer with queue.Queue for decoupled processing",
+    doc_url="https://docs.python.org/3/library/queue.html",
+)
+def producer_consumer() -> None:
+    """Demonstrate producer/consumer with threading and Queue."""
+    show(
+        "q = queue.Queue(maxsize=5)\n\n"
+        "def producer(q, items):\n"
+        "    for item in items:\n"
+        "        q.put(item)\n"
+        "    q.put(None)  # sentinel\n\n"
+        "def consumer(q):\n"
+        "    while (item := q.get()) is not None:\n"
+        "        process(item)"
+    )
+
+    results: list[str] = []
+    q: queue.Queue[int | None] = queue.Queue(maxsize=3)
+
+    def producer(items: list[int]) -> None:
+        for item in items:
+            q.put(item)
+        q.put(None)
+
+    def consumer() -> None:
+        while (item := q.get()) is not None:
+            results.append(f"{item}→{item**2}")
+            q.task_done()
+        q.task_done()
+
+    items = [1, 2, 3, 4, 5]
+    prod = threading.Thread(target=producer, args=(items,))
+    cons = threading.Thread(target=consumer)
+
+    prod.start()
+    cons.start()
+    prod.join()
+    cons.join()
+
+    print(f"  Produced: {items}")
+    print(f"  Consumed: [{', '.join(results)}]")
+    print(f"  Queue empty: {q.empty()}")
+
+
+@example(
+    "Design Patterns",
+    "Token bucket rate limiter for controlling throughput",
+    doc_url="https://docs.python.org/3/library/time.html#time.monotonic",
+)
+def rate_limiter() -> None:
+    """Demonstrate token bucket rate limiter."""
+
+    class TokenBucket:
+        def __init__(self: "TokenBucket", rate: float, capacity: int) -> None:
+            self.rate = rate
+            self.capacity = capacity
+            self.tokens = float(capacity)
+            self.last_refill = time.monotonic()
+
+        def _refill(self: "TokenBucket") -> None:
+            now = time.monotonic()
+            elapsed = now - self.last_refill
+            self.tokens = min(self.capacity, self.tokens + elapsed * self.rate)
+            self.last_refill = now
+
+        def acquire(self: "TokenBucket") -> bool:
+            self._refill()
+            if self.tokens >= 1:
+                self.tokens -= 1
+                return True
+            return False
+
+    show(
+        "class TokenBucket:\n"
+        "    def __init__(self, rate, capacity):\n"
+        "        self.rate = rate       # tokens per second\n"
+        "        self.capacity = capacity\n\n"
+        "    def acquire(self) -> bool:\n"
+        "        self._refill()\n"
+        "        if self.tokens >= 1:\n"
+        "            self.tokens -= 1\n"
+        "            return True\n"
+        "        return False"
+    )
+
+    bucket = TokenBucket(rate=5, capacity=3)
+    print(f"  Rate: {bucket.rate}/s, capacity: {bucket.capacity}")
+
+    allowed = 0
+    denied = 0
+    for i in range(6):
+        if bucket.acquire():
+            allowed += 1
+            print(f"  Request {i + 1}: allowed")
+        else:
+            denied += 1
+            print(f"  Request {i + 1}: denied (rate limited)")
+
+    print(f"  Total: {allowed} allowed, {denied} denied")

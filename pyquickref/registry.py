@@ -102,9 +102,16 @@ LESSONS: list[Lesson] = [
     Lesson(
         10,
         "Design Patterns",
-        "Factory, strategy, observer — reusable solutions",
+        "Factory, strategy, observer, builder, producer/consumer, rate limiter",
         ["Design Patterns"],
-        doc_url="https://docs.python.org/3/library/abc.html",
+        doc_url="https://refactoring.guru/design-patterns/python",
+    ),
+    Lesson(
+        11,
+        "Practical Patterns",
+        "Retry, timeout, pipeline, batching — real-world utilities",
+        ["Practical Patterns"],
+        doc_url="https://docs.python.org/3/library/functools.html",
     ),
 ]
 

@@ -14,7 +14,7 @@ from pyquickref.registry import (
 def test_registry_populated() -> None:
     """Registry should contain all registered examples."""
     registry = get_registry()
-    assert len(registry) >= 46
+    assert len(registry) >= 58
     assert "basic_types" in registry
     assert "list_iterate" in registry
     assert "if_elif_else" in registry
@@ -22,6 +22,8 @@ def test_registry_populated() -> None:
     assert "class_basics" in registry
     assert "factory_pattern" in registry
     assert "asyncio_example" in registry
+    assert "retry_backoff" in registry
+    assert "builder_pattern" in registry
 
 
 def test_get_by_category() -> None:
@@ -30,6 +32,7 @@ def test_get_by_category() -> None:
     assert "Data Structures" in groups
     assert "Classes" in groups
     assert "Design Patterns" in groups
+    assert "Practical Patterns" in groups
     assert len(groups["Data Structures"]) >= 12
 
 
@@ -49,7 +52,7 @@ def test_get_example_missing() -> None:
 def test_lessons_exist() -> None:
     """There should be at least 10 lessons in order."""
     lessons = get_lessons()
-    assert len(lessons) >= 10
+    assert len(lessons) >= 11
     assert lessons[0].number == 1
     assert lessons[0].title == "Data Structures"
 
@@ -77,6 +80,6 @@ def test_examples_in_lesson_order() -> None:
     ordered = examples_in_lesson_order()
     names = [e.name for e in ordered]
     assert len(names) == len(set(names))
-    assert len(names) >= 46
+    assert len(names) >= 58
     # Lesson 1 examples should come before lesson 10 examples
     assert names.index("list_iterate") < names.index("factory_pattern")
