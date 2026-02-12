@@ -1,12 +1,14 @@
 """Modern Python features (3.10+) for PyQuickRef.
 
-This module demonstrates dataclasses, pattern matching, generators,
-walrus operator, and enums.
+Dataclasses, pattern matching, generators, walrus operator, enums, type hints.
+Docs: https://docs.python.org/3/whatsnew/3.10.html
 """
 
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any
+
+from pyquickref.registry import example, show
 
 
 class Color(Enum):
@@ -38,25 +40,32 @@ class Config:
     tags: list[str] = field(default_factory=list)
 
 
-def dataclass_example(self: Any) -> None:
+@example(
+    "Modern Python",
+    "Dataclasses with auto-generated __init__, __repr__, __eq__",
+    doc_url="https://docs.python.org/3/library/dataclasses.html",
+)
+def dataclass_example() -> None:
     """Demonstrate dataclasses with auto-generated methods."""
-    self.logger.info("Demonstrating dataclasses")
+    show("@dataclass\nclass Point:\n    x: float\n    y: float")
 
-    # Basic dataclass — __init__, __repr__, __eq__ are auto-generated
     p1 = Point(3.0, 4.0)
     p2 = Point(0.0, 0.0)
     print(f"Point: {p1}")
     print(f"Distance to origin: {p1.distance_to(p2):.1f}")
     print(f"Points equal: {p1 == Point(3.0, 4.0)}")
 
-    # Dataclass with defaults and field factories
     cfg = Config(name="app", tags=["web", "api"])
     print(f"Config: {cfg}")
 
 
-def pattern_matching(self: Any) -> None:
+@example(
+    "Modern Python",
+    "Structural pattern matching with match/case (3.10+)",
+    doc_url="https://docs.python.org/3/whatsnew/3.10.html#pep-634-structural-pattern-matching",
+)
+def pattern_matching() -> None:
     """Demonstrate structural pattern matching (match/case)."""
-    self.logger.info("Demonstrating pattern matching")
 
     # Match on value
     def http_status(code: int) -> str:
@@ -70,6 +79,7 @@ def pattern_matching(self: Any) -> None:
             case _:
                 return f"Unknown ({code})"
 
+    show("match code:\n    case 200: return 'OK'\n    case 404: return 'Not Found'")
     for code in [200, 404, 500, 418]:
         print(f"  HTTP {code}: {http_status(code)}")
 
@@ -94,9 +104,13 @@ def pattern_matching(self: Any) -> None:
         print(f"  {describe(shape)}")
 
 
-def generator_example(self: Any) -> None:
+@example(
+    "Modern Python",
+    "Generator functions, expressions, and walrus operator",
+    doc_url="https://docs.python.org/3/howto/functional.html#generators",
+)
+def generator_example() -> None:
     """Demonstrate generators and yield."""
-    self.logger.info("Demonstrating generators")
 
     # Generator function with yield
     def fibonacci(n: int) -> Any:
@@ -105,13 +119,23 @@ def generator_example(self: Any) -> None:
             yield a
             a, b = b, a + b
 
+    show(
+        "def fibonacci(n):\n    a, b = 0, 1\n"
+        "    for _ in range(n):\n"
+        "        yield a\n        a, b = b, a + b"
+    )
     print(f"Fibonacci(8): {list(fibonacci(8))}")
 
     # Generator expression (like list comprehension but lazy)
+    show("squares_gen = (x**2 for x in range(5))")
     squares_gen = (x**2 for x in range(5))
     print(f"Generator expression: {list(squares_gen)}")
 
     # Walrus operator (:=) in a while loop
+    show(
+        "while (val := next(it, None)) is not None:\n"
+        "    if val > 4: results.append(val)"
+    )
     data = [1, 5, 3, 8, 2, 7]
     print("Values > 4 (walrus operator):")
     it = iter(data)
@@ -122,15 +146,18 @@ def generator_example(self: Any) -> None:
     print(f"  {results}")
 
 
-def enum_example(self: Any) -> None:
+@example(
+    "Modern Python",
+    "Enums for type-safe constants with match/case",
+    doc_url="https://docs.python.org/3/library/enum.html",
+)
+def enum_example() -> None:
     """Demonstrate enums for type-safe constants."""
-    self.logger.info("Demonstrating enums")
-
+    show("class Color(Enum):\n    RED = auto()\n    GREEN = auto()\n    BLUE = auto()")
     print(f"Color.RED: {Color.RED}")
     print(f"Color.RED.value: {Color.RED.value}")
     print(f"All colors: {[c.name for c in Color]}")
 
-    # Enum in match/case
     def describe_color(color: Color) -> str:
         match color:
             case Color.RED:
@@ -142,3 +169,93 @@ def enum_example(self: Any) -> None:
 
     for color in Color:
         print(f"  {color.name} is {describe_color(color)}")
+
+
+@example(
+    "Modern Python",
+    "Walrus operator (:=) in while loops, comprehensions, and if",
+    doc_url="https://docs.python.org/3/whatsnew/3.8.html#assignment-expressions",
+)
+def walrus_operator() -> None:
+    """Demonstrate the walrus operator (:=) for inline assignment."""
+    # In a while loop — read until sentinel
+    show(
+        "data = [1, 5, 3, 8, 2, 7]\n"
+        "it = iter(data)\n"
+        "while (val := next(it, None)) is not None:\n"
+        "    if val > 4: big.append(val)"
+    )
+    data = [1, 5, 3, 8, 2, 7]
+    it = iter(data)
+    big: list[int] = []
+    while (val := next(it, None)) is not None:
+        if val > 4:
+            big.append(val)
+    print(f"Values > 4: {big}")
+
+    # In a list comprehension — compute once, filter and use
+    show("[y for x in range(10) if (y := x**2) > 20]")
+    result = [y for x in range(10) if (y := x**2) > 20]
+    print(f"Squares > 20: {result}")
+
+    # In an if statement — avoid double computation
+    show("text = 'Hello World'\nif (n := len(text)) > 5:\n    print(f'{n} chars')")
+    text = "Hello World"
+    if (n := len(text)) > 5:
+        print(f"Text has {n} characters (> 5)")
+
+
+@example(
+    "Modern Python",
+    "Type hints: basic annotations, Optional, Union, generics",
+    doc_url="https://docs.python.org/3/library/typing.html",
+)
+def type_hints() -> None:
+    """Demonstrate type annotations and common typing patterns."""
+    # Basic annotations
+    show(
+        "def add(a: int, b: int) -> int:\n"
+        "    return a + b\n\n"
+        "name: str = 'Python'\n"
+        "scores: list[int] = [95, 87, 92]"
+    )
+    name: str = "Python"
+    scores: list[int] = [95, 87, 92]
+    print(f"name: {name} (annotated as str)")
+    print(f"scores: {scores} (annotated as list[int])")
+
+    # Optional and Union (modern syntax with |)
+    show(
+        "def find_user(user_id: int) -> str | None:\n"
+        "    users = {1: 'Alice', 2: 'Bob'}\n"
+        "    return users.get(user_id)"
+    )
+
+    def find_user(user_id: int) -> str | None:
+        users = {1: "Alice", 2: "Bob"}
+        return users.get(user_id)
+
+    print(f"find_user(1) = {find_user(1)!r}")
+    print(f"find_user(9) = {find_user(9)!r}")
+
+    # Generic containers
+    show(
+        "def first(items: list[str]) -> str | None:\n"
+        "    return items[0] if items else None\n\n"
+        "coords: dict[str, float] = {'lat': 40.7, 'lon': -74.0}"
+    )
+    coords: dict[str, float] = {"lat": 40.7, "lon": -74.0}
+    print(f"coords: {coords} (dict[str, float])")
+
+    # Callable type hint
+    show(
+        "from collections.abc import Callable\n\n"
+        "def apply(func: Callable[[int], int], val: int) -> int:\n"
+        "    return func(val)"
+    )
+    from collections.abc import Callable as CallableType
+
+    def apply(func: CallableType[[int], int], val: int) -> int:
+        return func(val)
+
+    print(f"apply(lambda x: x*2, 5) = {apply(lambda x: x * 2, 5)}")  # noqa: E731

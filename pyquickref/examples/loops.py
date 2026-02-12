@@ -1,33 +1,40 @@
 """Loop examples for PyQuickRef.
 
-This module contains examples demonstrating Python's loop constructs,
-including for loops, while loops, enumerate, zip, and break/continue.
+For loops, while loops, enumerate, zip, and break/continue.
+Docs: https://docs.python.org/3/tutorial/controlflow.html#for-statements
 """
 
-from typing import Any
+from pyquickref.registry import example, show
 
 
-def loop_range(self: Any) -> None:
+@example(
+    "Loops",
+    "enumerate(), zip() — iterate with indices and parallel sequences",
+    doc_url="https://docs.python.org/3/tutorial/controlflow.html#for-statements",
+)
+def loop_range() -> None:
     """Demonstrate for loops with range, enumerate, and zip."""
-    self.logger.info("Demonstrating loop constructs")
-
     # Basic range
+    show("list(range(5))")
     print("Range(5):", list(range(5)))
 
-    # Enumerate — index + value
+    # Enumerate -- index + value
     fruits = ["apple", "banana", "cherry"]
+    show("for i, fruit in enumerate(fruits):\n    print(f'  {i}: {fruit}')")
     print("Enumerate:")
     for i, fruit in enumerate(fruits):
         print(f"  {i}: {fruit}")
 
-    # Zip — iterate multiple sequences together
+    # Zip -- iterate multiple sequences together
     names = ["Alice", "Bob", "Charlie"]
     ages = [25, 30, 35]
+    show("for name, age in zip(names, ages):\n    print(f'  {name} is {age}')")
     print("Zip:")
     for name, age in zip(names, ages, strict=False):
         print(f"  {name} is {age}")
 
     # While loop with break
+    show("while count < 10:\n    if count == 3: break")
     print("While loop (break at 3):")
     count = 0
     while count < 10:
@@ -36,7 +43,8 @@ def loop_range(self: Any) -> None:
         print(f"  count={count}")
         count += 1
 
-    # Continue — skip even numbers
+    # Continue -- skip even numbers
+    show("for i in range(6):\n    if i % 2 == 0: continue\n    print(i)")
     print("Continue (skip even):")
     for i in range(6):
         if i % 2 == 0:

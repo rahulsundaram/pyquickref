@@ -1,6 +1,5 @@
 """Shared test fixtures and configuration."""
 
-import logging
 import os
 import tempfile
 from collections.abc import Callable, Generator
@@ -9,7 +8,8 @@ from typing import Any
 import pytest
 from pytest import CaptureFixture
 
-from pyquickref.core import PyQuickRef
+import pyquickref.examples  # noqa: F401  — trigger registration
+from pyquickref.testdata import SampleData
 
 
 @pytest.fixture
@@ -23,12 +23,17 @@ def temp_dir() -> Generator[str, None, None]:
 
 
 @pytest.fixture
-def quickref(temp_dir: str) -> PyQuickRef:
-    """Create a PyQuickRef instance for testing."""
-    logger = logging.getLogger("test_logger")
-    logger.setLevel(logging.CRITICAL)
-    output_dir = os.path.join(temp_dir, "output")
-    return PyQuickRef(logger, output_dir=output_dir)
+def sample_data() -> SampleData:
+    """Provide a fresh SampleData instance (mutations are isolated per test)."""
+    return SampleData()
+
+
+@pytest.fixture
+def output_dir(temp_dir: str) -> str:
+    """Provide a temporary output directory for file-writing examples."""
+    path = os.path.join(temp_dir, "output")
+    os.makedirs(path)
+    return path
 
 
 @pytest.fixture

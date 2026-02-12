@@ -1,50 +1,56 @@
 # PyQuickRef Sample Configuration
-# Use this file with: python main.py --config sample_config.yaml
+# Use with: uv run pyquickref --config sample_config.yaml
 
 # List of functions to run (in order)
 functions:
   - list_iterate
   - dict_iterate
   - set_modify
-
-  # String and data structure examples
   - string_operations
   - list_comprehend
-
-  # Advanced features
   - regex_patterns
   - json_operations
   - decorator_example
+  - factory_pattern
+  - asyncio_example
 
-  # Demonstration grouping example - uncomment to use
+  # Uncomment to include more:
   # - context_managers
   # - thread_execute
   # - error_handle
+  # - pathlib_example
+  # - datetime_example
 
-# Specify the output directory
-output_dir: data  # Updated directory name
+# Output directory for file-writing examples
+output_dir: data
 
-# Named groups of functions for different purposes
-# These are not used directly but serve as documentation
+# Named groups for reference (not used by the CLI directly)
 function_groups:
   basic:
     - list_iterate
     - dict_iterate
     - tuple_unpack
-
-  strings:
     - string_operations
 
+  modern:
+    - dataclass_example
+    - pattern_matching
+    - generator_example
+    - enum_example
+
+  patterns:
+    - factory_pattern
+    - strategy_pattern
+    - observer_pattern
+
+  stdlib:
+    - pathlib_example
+    - datetime_example
+    - functools_example
+    - asyncio_example
+
   advanced:
-    - lambda_functions
-    - context_managers
-    - decorator_example
-
-  error_handling:
-    - error_handle
-
-  all_data_types:
-    - list_modify
-    - dict_iterate
-    - set_modify
-    - tuple_unpack
+    - regex_patterns
+    - json_operations
+    - itertools_examples
+    - thread_execute
