@@ -113,6 +113,48 @@ LESSONS: list[Lesson] = [
         ["Practical Patterns"],
         doc_url="https://docs.python.org/3/library/functools.html",
     ),
+    Lesson(
+        12,
+        "Iterators & Context Managers",
+        "Iterator protocol, custom iterators, with statement, contextlib",
+        ["Iterators & Context Managers"],
+        doc_url="https://docs.python.org/3/library/stdtypes.html#iterator-types",
+    ),
+    Lesson(
+        13,
+        "Advanced OOP",
+        "Descriptors, metaclasses, protocols, ABCs, MRO",
+        ["Advanced OOP"],
+        doc_url="https://docs.python.org/3/reference/datamodel.html#descriptors",
+    ),
+    Lesson(
+        14,
+        "Type System",
+        "Generics, TypeVar, overload, ParamSpec, TypeGuard",
+        ["Type System"],
+        doc_url="https://docs.python.org/3/library/typing.html",
+    ),
+    Lesson(
+        15,
+        "Concurrency",
+        "asyncio, threading, multiprocessing, GIL",
+        ["Concurrency"],
+        doc_url="https://docs.python.org/3/library/concurrency.html",
+    ),
+    Lesson(
+        16,
+        "Testing & Debugging",
+        "pytest patterns, fixtures, parametrize, mocking, pdb",
+        ["Testing & Debugging"],
+        doc_url="https://docs.python.org/3/library/unittest.html",
+    ),
+    Lesson(
+        17,
+        "Modules & Packaging",
+        "Import system, __init__.py, __all__, entry points, pyproject.toml",
+        ["Modules & Packaging"],
+        doc_url="https://docs.python.org/3/reference/import.html",
+    ),
 ]
 
 

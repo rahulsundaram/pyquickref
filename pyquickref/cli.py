@@ -4,8 +4,6 @@ import argparse
 import difflib
 import sys
 
-import yaml
-
 import pyquickref.examples  # noqa: F401  — trigger @example registration
 from pyquickref import __version__
 from pyquickref.core import list_examples, run_examples, run_lesson
@@ -18,7 +16,6 @@ examples:
   pyquickref factory_pattern asyncio_example
   pyquickref --lesson 1               run lesson 1 only
   pyquickref --list                   show the lesson plan
-  pyquickref --config sample_config.yaml
 """
 
 
@@ -26,7 +23,7 @@ def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
         prog="pyquickref",
-        description="Learn Python by example — code then output, lesson by lesson.",
+        description="Python quick reference — runnable examples, lesson by lesson.",
         epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -51,17 +48,6 @@ def parse_args() -> argparse.Namespace:
         help="run a specific lesson (e.g. --lesson 1)",
     )
     parser.add_argument(
-        "--config",
-        metavar="FILE",
-        help="load examples to run from a YAML config file",
-    )
-    parser.add_argument(
-        "--output-dir",
-        default="data",
-        metavar="DIR",
-        help="directory for file outputs (default: data)",
-    )
-    parser.add_argument(
         "-V",
         "--version",
         action="version",
@@ -81,7 +67,7 @@ def main() -> None:
     if args.lesson is not None:
         lesson = get_lesson(args.lesson)
         if lesson is not None:
-            run_lesson(lesson, args.output_dir)
+            run_lesson(lesson, "data")
         else:
             nums = [str(ls.number) for ls in get_lessons()]
             print(f"Unknown lesson: {args.lesson}")
@@ -90,15 +76,6 @@ def main() -> None:
         return
 
     functions_to_run: list[str] | None = None
-
-    if args.config:
-        try:
-            with open(args.config) as config_file:
-                config = yaml.safe_load(config_file)
-                if "functions" in config:
-                    functions_to_run = config["functions"]
-        except (OSError, yaml.YAMLError) as e:
-            print(f"Error loading config file: {e}")
 
     if args.examples:
         all_names = list(get_registry())
@@ -115,7 +92,7 @@ def main() -> None:
             sys.exit(1)
         functions_to_run = args.examples
 
-    run_examples(functions_to_run, args.output_dir)
+    run_examples(functions_to_run)
 
 
 if __name__ == "__main__":

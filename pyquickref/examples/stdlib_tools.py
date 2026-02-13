@@ -1,9 +1,10 @@
 """Standard library tools examples for PyQuickRef.
 
-pathlib, datetime/zoneinfo, functools, and asyncio.
+pathlib, datetime/zoneinfo, functools, logging, subprocess.
 """
 
-import asyncio
+import logging
+import subprocess
 import tempfile
 from datetime import datetime, timedelta, timezone
 from functools import lru_cache, partial, reduce
@@ -99,33 +100,99 @@ def functools_example() -> None:
 
 @example(
     "Stdlib Tools",
-    "async/await, gather, concurrent tasks with asyncio",
-    doc_url="https://docs.python.org/3/library/asyncio.html",
+    "Logging module: loggers, handlers, formatters, levels",
+    doc_url="https://docs.python.org/3/library/logging.html",
 )
-def asyncio_example() -> None:
-    """Demonstrate async/await and asyncio.gather."""
+def logging_example() -> None:
+    """Demonstrate the logging module with handlers and formatters."""
+    import io
 
-    async def fetch(name: str, delay: float) -> str:
-        """Simulate an async network request."""
-        await asyncio.sleep(delay)
-        return f"{name} done ({delay}s)"
+    show(
+        "logger = logging.getLogger('myapp')\n"
+        "handler = logging.StreamHandler(stream)\n"
+        "handler.setFormatter(logging.Formatter(fmt))\n"
+        "logger.addHandler(handler)"
+    )
 
-    async def main() -> None:
-        """Run sequential and concurrent async tasks."""
-        show(fetch)
-        # Sequential
-        show("result = await fetch('A', 0.1)")
-        result = await fetch("A", 0.1)
-        print(f"Sequential: {result}")
+    # Create a logger with a stream handler that writes to a StringIO
+    # so we can capture and display the output
+    stream = io.StringIO()
+    logger = logging.getLogger("pyquickref.demo")
+    logger.setLevel(logging.DEBUG)
+    logger.handlers.clear()
 
-        # Concurrent with gather
-        show("results = await asyncio.gather(fetch('B', 0.1), fetch('C', 0.1))")
-        results = await asyncio.gather(
-            fetch("B", 0.1),
-            fetch("C", 0.1),
-            fetch("D", 0.1),
-        )
-        for r in results:
-            print(f"Gathered: {r}")
+    fmt = "%(levelname)-8s %(name)s: %(message)s"
+    handler = logging.StreamHandler(stream)
+    handler.setFormatter(logging.Formatter(fmt))
+    logger.addHandler(handler)
 
-    asyncio.run(main())
+    show(
+        "logger.debug('Detailed info for diagnosing')\n"
+        "logger.info('General operational message')\n"
+        "logger.warning('Something unexpected')\n"
+        "logger.error('Something failed')"
+    )
+    logger.debug("Detailed info for diagnosing")
+    logger.info("General operational message")
+    logger.warning("Something unexpected")
+    logger.error("Something failed")
+
+    output = stream.getvalue()
+    for line in output.strip().splitlines():
+        print(f"  {line}")
+
+    # Levels hierarchy
+    show(
+        "logging.DEBUG < logging.INFO < logging.WARNING"
+        " < logging.ERROR < logging.CRITICAL"
+    )
+    print(
+        f"DEBUG={logging.DEBUG}, INFO={logging.INFO}, WARNING={logging.WARNING}, "
+        f"ERROR={logging.ERROR}, CRITICAL={logging.CRITICAL}"
+    )
+
+    # Cleanup
+    logger.handlers.clear()
+
+
+@example(
+    "Stdlib Tools",
+    "subprocess.run: execute commands, capture output, check errors",
+    doc_url="https://docs.python.org/3/library/subprocess.html",
+)
+def subprocess_example() -> None:
+    """Demonstrate subprocess.run for executing external commands."""
+    show("result = subprocess.run(['echo', 'hello'], capture_output=True, text=True)")
+    result = subprocess.run(
+        ["echo", "hello"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    print(f"stdout     : {result.stdout.strip()!r}")
+    print(f"returncode : {result.returncode}")
+
+    show(
+        "result = subprocess.run(\n"
+        "    ['python3', '-c', 'print(2+2)'],\n"
+        "    capture_output=True, text=True)"
+    )
+    result = subprocess.run(
+        ["python3", "-c", "print(2+2)"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    print(f"stdout     : {result.stdout.strip()!r}")
+
+    # check=True raises on non-zero exit
+    show(
+        "try:\n"
+        "    subprocess.run(['false'], check=True)\n"
+        "except subprocess.CalledProcessError as e:\n"
+        "    print(f'Command failed: {e}')"
+    )
+    try:
+        subprocess.run(["false"], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Command failed: exit code {e.returncode}")
