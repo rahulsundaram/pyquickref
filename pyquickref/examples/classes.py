@@ -1,6 +1,6 @@
 """Class and OOP examples for PyQuickRef.
 
-Classes, inheritance, properties, and dunder methods.
+Classes, inheritance, properties, dunder methods, and MRO.
 Docs: https://docs.python.org/3/tutorial/classes.html
 """
 
@@ -128,3 +128,64 @@ def dunder_methods() -> None:
     print(f"v1 == Vector(1, 2)? {v1 == Vector(1, 2)}")
     print(f"v1 < v2? {v1 < v2}")
     print(f"len(v1) = {len(v1)}")
+
+
+@example(
+    "Classes",
+    "Multiple inheritance, MRO (method resolution order), diamond problem",
+    doc_url="https://docs.python.org/3/tutorial/classes.html#multiple-inheritance",
+)
+def multiple_inheritance() -> None:
+    """Demonstrate multiple inheritance and MRO."""
+
+    class A:
+        def greet(self) -> str:
+            return "Hello from A"
+
+    class B(A):
+        def greet(self) -> str:
+            return "Hello from B"
+
+    class C(A):
+        def greet(self) -> str:
+            return "Hello from C"
+
+    class D(B, C):
+        pass  # Diamond: D -> B -> C -> A
+
+    show(A)
+    show(B)
+    show(C)
+    show("class D(B, C): pass  # Diamond inheritance")
+
+    d = D()
+    print(f"D().greet() = {d.greet()!r}")
+
+    # MRO shows the lookup order
+    show("D.__mro__")
+    mro_names = [cls.__name__ for cls in D.__mro__]
+    print(f"MRO: {' -> '.join(mro_names)}")
+
+    # super() follows MRO, not just the parent
+    class Base:
+        def __init__(self) -> None:
+            self.calls: list[str] = []
+
+    class Left(Base):
+        def __init__(self) -> None:
+            super().__init__()
+            self.calls.append("Left")
+
+    class Right(Base):
+        def __init__(self) -> None:
+            super().__init__()
+            self.calls.append("Right")
+
+    class Child(Left, Right):
+        def __init__(self) -> None:
+            super().__init__()
+            self.calls.append("Child")
+
+    show(Child)
+    child = Child()
+    print(f"Init order: {child.calls}")

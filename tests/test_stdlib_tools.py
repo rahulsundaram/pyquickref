@@ -3,10 +3,11 @@
 from collections.abc import Callable
 
 from pyquickref.examples.stdlib_tools import (
-    asyncio_example,
     datetime_example,
     functools_example,
+    logging_example,
     pathlib_example,
+    subprocess_example,
 )
 
 
@@ -36,9 +37,18 @@ def test_functools_example(capture_output: Callable) -> None:
     assert "reduce sum = 15" in output
 
 
-def test_asyncio_example(capture_output: Callable) -> None:
-    """Test asyncio operations."""
-    output = capture_output(asyncio_example)
-    assert "A done" in output
-    assert "B done" in output
-    assert "C done" in output
+def test_logging_example(capture_output: Callable) -> None:
+    """Test logging module demonstration."""
+    output = capture_output(logging_example)
+    assert "DEBUG" in output
+    assert "INFO" in output
+    assert "WARNING" in output
+    assert "ERROR" in output
+
+
+def test_subprocess_example(capture_output: Callable) -> None:
+    """Test subprocess operations."""
+    output = capture_output(subprocess_example)
+    assert "'hello'" in output
+    assert "returncode" in output
+    assert "Command failed" in output

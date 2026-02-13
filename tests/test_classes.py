@@ -2,7 +2,11 @@
 
 from collections.abc import Callable
 
-from pyquickref.examples.classes import class_basics, dunder_methods
+from pyquickref.examples.classes import (
+    class_basics,
+    dunder_methods,
+    multiple_inheritance,
+)
 
 
 def test_class_basics(capture_output: Callable) -> None:
@@ -25,3 +29,11 @@ def test_dunder_methods(capture_output: Callable) -> None:
     assert "v1 == Vector(1, 2)? True" in output
     assert "v1 < v2? True" in output
     assert "len(v1) = 2" in output
+
+
+def test_multiple_inheritance(capture_output: Callable) -> None:
+    """Test multiple inheritance and MRO."""
+    output = capture_output(multiple_inheritance)
+    assert "Hello from B" in output
+    assert "MRO:" in output
+    assert "Init order:" in output
