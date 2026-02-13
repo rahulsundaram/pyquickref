@@ -148,6 +148,16 @@ make run             # run all examples
 make list            # list all examples
 ```
 
+### Docker (no local tooling needed)
+
+```bash
+make docker-check    # run all checks in a container
+make docker-run      # run all examples in a container
+make docker-list     # list all examples in a container
+make docker-test     # run tests only
+make docker-lint     # run linting only
+```
+
 Or run individual tools directly:
 
 ```bash
