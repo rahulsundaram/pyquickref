@@ -164,23 +164,20 @@ pre-commit install   # enable pre-commit hooks
 ### Running Checks
 
 ```bash
-make check           # run all checks (lint + format + typecheck + test)
-make lint            # ruff linter only
-make format          # auto-format with ruff
-make typecheck       # ty type checker only
-make test            # pytest only
-make run             # run all examples
-make list            # list all examples
+just check           # run all checks (lint + format + typecheck + test)
+just lint            # ruff linter only
+just format          # auto-format with ruff
+just typecheck       # ty type checker only
+just test            # pytest only
+just run             # run all examples
+just list            # list all examples
 ```
 
 ### Docker (no local tooling needed)
 
 ```bash
-make docker-check    # run all checks in a container
-make docker-run      # run all examples in a container
-make docker-list     # list all examples in a container
-make docker-test     # run tests only
-make docker-lint     # run linting only
+just docker-run      # run all examples in a container
+just docker-list     # list all examples in a container
 ```
 
 Or run individual tools directly:
@@ -209,7 +206,7 @@ Requires Python 3.10+ (tested on 3.10–3.13).
        output = capture_output(my_example)
        assert "expected text" in output
    ```
-4. Run `make check` to verify all checks pass (lint, format, types, tests)
+4. Run `just check` to verify all checks pass (lint, format, types, tests)
 5. Commit and push
 6. Open a Pull Request
 
